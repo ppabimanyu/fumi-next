@@ -17,15 +17,21 @@ import {
   ArrowUpDown,
   ListFilter,
   Settings2,
-  Timer,
-  TimerOff,
+  MoreHorizontal,
+  Shield,
+  UserPlus,
+  Mail,
+  Crown,
+  User,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -36,139 +42,149 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import SeparatorFull from "@/components/separator-full";
 import { cn } from "@/lib/utils";
-import { priority } from "@/components/priority";
 import moment from "moment";
-import { statusIcon } from "@/components/status-icon";
 
-const data: Issue[] = [
+const data: TeamMember[] = [
   {
-    id: "m5gr84i9",
-    code: "TASK-8782",
-    title:
-      "You can't compress the program without quantifying the open-source SSD pixel!",
-    status: {
-      name: "Done",
-      icon: "DONE",
-      isCompleted: true,
-      isCanceled: false,
-    },
-    priority: "MEDIUM",
-    dueDate: new Date("2025-12-09T23:59:59"),
+    id: "member-1",
+    name: "John Doe",
+    email: "john.doe@example.com",
+    avatar: "",
+    role: "owner",
+    status: "active",
+    joinedAt: new Date("2024-01-15"),
   },
   {
-    id: "3u1reuv4",
-    code: "TASK-7878",
-    title:
-      "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
-    status: {
-      name: "In Progress",
-      icon: "IN_PROGRESS",
-      isCompleted: false,
-      isCanceled: false,
-    },
-    priority: "HIGH",
-    dueDate: new Date("2025-12-08T23:59:59"),
+    id: "member-2",
+    name: "Sarah Johnson",
+    email: "sarah.johnson@example.com",
+    avatar: "",
+    role: "admin",
+    status: "active",
+    joinedAt: new Date("2024-03-20"),
   },
   {
-    id: "derv1ws0",
-    code: "TASK-7839",
-    title: "We need to bypass the neural TCP card!",
-    status: {
-      name: "Backlog",
-      icon: "BACKLOG",
-      isCompleted: false,
-      isCanceled: false,
-    },
-    priority: "NONE",
-    dueDate: new Date("2025-12-05T23:59:59"),
+    id: "member-3",
+    name: "Mike Chen",
+    email: "mike.chen@example.com",
+    avatar: "",
+    role: "member",
+    status: "active",
+    joinedAt: new Date("2024-06-10"),
   },
   {
-    id: "5kma53ae",
-    code: "TASK-5562",
-    title:
-      "The SAS interface is down, bypass the open-source pixel so we can back up the PNG bandwidth!",
-    status: {
-      name: "Review",
-      icon: "REVIEW",
-      isCompleted: false,
-      isCanceled: false,
-    },
-    priority: "MEDIUM",
-    dueDate: new Date("2025-12-04T23:59:59"),
+    id: "member-4",
+    name: "Emily Davis",
+    email: "emily.davis@example.com",
+    avatar: "",
+    role: "member",
+    status: "active",
+    joinedAt: new Date("2024-08-05"),
   },
   {
-    id: "5kma53ae",
-    code: "TASK-5562",
-    title:
-      "The SAS interface is down, bypass the open-source pixel so we can back up the PNG bandwidth!",
-    status: {
-      name: "Canceled",
-      icon: "CANCELED",
-      isCompleted: false,
-      isCanceled: true,
-    },
-    priority: "CRITICAL",
-    dueDate: new Date("2025-12-06T23:59:59"),
+    id: "member-5",
+    name: "Alex Wilson",
+    email: "alex.wilson@example.com",
+    avatar: "",
+    role: "member",
+    status: "pending",
+    joinedAt: new Date("2024-12-01"),
   },
 ];
 
-export type Issue = {
+export type TeamMember = {
   id: string;
-  code: string;
-  title: string;
-  status: {
-    name: string;
-    icon: string;
-    isCompleted: boolean;
-    isCanceled: boolean;
-  };
-  priority: string;
-  dueDate: Date;
+  name: string;
+  email: string;
+  avatar: string;
+  role: "owner" | "admin" | "member";
+  status: "active" | "pending" | "inactive";
+  joinedAt: Date;
 };
 
-export const columns: ColumnDef<Issue>[] = [
+const roleIcons: Record<TeamMember["role"], React.ReactNode> = {
+  owner: <Crown className="size-3 text-yellow-500" />,
+  admin: <Shield className="size-3 text-blue-500" />,
+  member: <User className="size-3 text-muted-foreground" />,
+};
+
+const roleBadges: Record<TeamMember["role"], string> = {
+  owner: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
+  admin: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+  member: "bg-muted text-muted-foreground border-border",
+};
+
+const statusBadges: Record<TeamMember["status"], string> = {
+  active: "bg-green-500/10 text-green-600 border-green-500/20",
+  pending: "bg-orange-500/10 text-orange-600 border-orange-500/20",
+  inactive: "bg-muted text-muted-foreground border-border",
+};
+
+export const columns: ColumnDef<TeamMember>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "name",
     header: ({ column }) => (
       <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
+        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1 cursor-pointer"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        ID
+        Member
         <ArrowUpDown className="ml-1 size-3" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="capitalize text-xs font-medium text-muted-foreground">
-        {row.original.code}
+      <div className="flex items-center gap-3">
+        <Avatar className="size-8">
+          <AvatarImage src={row.original.avatar} alt={row.original.name} />
+          <AvatarFallback className="text-xs">
+            {row.original.name
+              .split(" ")
+              .map((n) => n[0])
+              .join("")
+              .toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className="space-y-0.5">
+          <div className="text-xs font-medium">{row.original.name}</div>
+          <div className="text-xs text-muted-foreground">
+            {row.original.email}
+          </div>
+        </div>
       </div>
     ),
   },
   {
-    accessorKey: "title",
+    accessorKey: "role",
     header: ({ column }) => (
       <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
+        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1 cursor-pointer"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Title
+        Role
         <ArrowUpDown className="ml-1 size-3" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="capitalize text-xs font-medium max-w-xs md:max-w-md overflow-hidden text-ellipsis">
-        {row.original.title}
+      <div
+        className={cn(
+          "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border text-xs font-medium capitalize",
+          roleBadges[row.original.role]
+        )}
+      >
+        {roleIcons[row.original.role]}
+        {row.original.role}
       </div>
     ),
   },
   {
     accessorKey: "status",
-    accessorFn: (row) => row.status.name,
     header: ({ column }) => (
       <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
+        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1 cursor-pointer"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
         Status
@@ -176,67 +192,66 @@ export const columns: ColumnDef<Issue>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="capitalize text-xs font-medium max-w-xs overflow-hidden text-ellipsis flex items-center gap-1">
-        {statusIcon[row.original.status.icon]}
-        {row.original.status.name}
+      <div
+        className={cn(
+          "inline-flex items-center px-2 py-0.5 rounded-md border text-xs font-medium capitalize",
+          statusBadges[row.original.status]
+        )}
+      >
+        {row.original.status}
       </div>
     ),
   },
   {
-    accessorKey: "priority",
+    accessorKey: "joinedAt",
     header: ({ column }) => (
       <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
+        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1 cursor-pointer"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Priority
-        <ArrowUpDown className="ml-1 size-3" />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="max-w-xs overflow-hidden text-ellipsis">
-        {priority[row.original.priority]}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "due",
-    accessorFn: (row) => row.dueDate,
-    header: ({ column }) => (
-      <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Due
+        Joined
         <ArrowUpDown className="ml-1 size-3" />
       </div>
     ),
     cell: ({ row }) => {
-      const overdue = row.original.dueDate < new Date();
-      const time = moment(row.original.dueDate).fromNow();
-      const isToday =
-        row.original.dueDate.toDateString() === new Date().toDateString();
+      const date = moment(row.original.joinedAt).format("MMM D, YYYY");
       return (
-        <div
-          className={cn(
-            "capitalize flex items-center gap-1 text-xs font-medium",
-            isToday ? "text-yellow-500" : "",
-            overdue ? "text-destructive" : ""
-          )}
-        >
-          {overdue ? (
-            <TimerOff className="size-4" />
-          ) : (
-            <Timer className="size-4" />
-          )}
-          {time}
-        </div>
+        <div className="text-xs font-medium text-muted-foreground">{date}</div>
       );
     },
   },
+  {
+    id: "actions",
+    cell: ({ row }) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="size-8">
+            <MoreHorizontal className="size-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-xs">
+            <Mail className="size-3 mr-2" />
+            Send email
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-xs">
+            <Shield className="size-3 mr-2" />
+            Change role
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-xs text-destructive">
+            Remove from team
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
+  },
 ];
 
-export function TableIssues() {
+export function TableMembers() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -269,20 +284,27 @@ export function TableIssues() {
       <div className="flex gap-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            Assigned
+            All Members
           </div>
           <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            Created
+            Admins
+          </div>
+          <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
+            Pending
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1">
+          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
+            <UserPlus className="size-4" />
+            Invite
+          </div>
+          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
             <ListFilter className="size-4" />
             Filter
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1">
+              <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
                 <Settings2 className="size-4" />
                 Display
               </div>
@@ -357,37 +379,13 @@ export function TableIssues() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No team members.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      {/* <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div> */}
     </div>
   );
 }

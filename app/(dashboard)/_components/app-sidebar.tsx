@@ -14,6 +14,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavSecondary } from "./nav-secondary";
+import { NavProject } from "./nav-project";
+import { NavWorkspace } from "./nav-workspace";
 
 // This is sample data.
 const data = {
@@ -44,6 +46,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain />
+        <NavWorkspace />
+        <NavProject />
         <NavSecondary />
       </SidebarContent>
       <SidebarFooter>

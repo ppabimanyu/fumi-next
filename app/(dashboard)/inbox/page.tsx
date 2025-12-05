@@ -1,17 +1,17 @@
-import { LayoutList, Logs, ScanText } from "lucide-react";
-import { TableIssues } from "./_components/table-issues";
+import { Inbox } from "lucide-react";
+import { TableInbox } from "./_components/table-inbox";
 import SeparatorFull from "@/components/separator-full";
 import { PageTitle } from "@/components/page";
 
-export default function MyIssuesPage() {
+export default function InboxPage() {
   return (
     <div className="space-y-2">
       <PageTitle className="flex gap-2 items-center">
-        <ScanText className="size-5" />
-        My Issues
+        <Inbox className="size-5" />
+        Inbox
       </PageTitle>
       <SeparatorFull />
-      <TableIssues />
+      <TableInbox />
     </div>
   );
 }

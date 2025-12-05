@@ -17,11 +17,14 @@ import {
   ArrowUpDown,
   ListFilter,
   Settings2,
-  Timer,
-  TimerOff,
+  Check,
+  Circle,
+  AtSign,
+  MessageSquare,
+  Bell,
+  Archive,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -38,113 +41,96 @@ import {
 } from "@/components/ui/table";
 import SeparatorFull from "@/components/separator-full";
 import { cn } from "@/lib/utils";
-import { priority } from "@/components/priority";
 import moment from "moment";
-import { statusIcon } from "@/components/status-icon";
 
-const data: Issue[] = [
+const data: InboxItem[] = [
   {
-    id: "m5gr84i9",
-    code: "TASK-8782",
-    title:
-      "You can't compress the program without quantifying the open-source SSD pixel!",
-    status: {
-      name: "Done",
-      icon: "DONE",
-      isCompleted: true,
-      isCanceled: false,
-    },
-    priority: "MEDIUM",
-    dueDate: new Date("2025-12-09T23:59:59"),
+    id: "inbox-1",
+    type: "mention",
+    title: "John mentioned you in TASK-8782",
+    description:
+      "Hey @you, can you take a look at this issue? I think we need your input on the implementation.",
+    isRead: false,
+    createdAt: new Date("2025-12-05T10:30:00"),
   },
   {
-    id: "3u1reuv4",
-    code: "TASK-7878",
-    title:
-      "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
-    status: {
-      name: "In Progress",
-      icon: "IN_PROGRESS",
-      isCompleted: false,
-      isCanceled: false,
-    },
-    priority: "HIGH",
-    dueDate: new Date("2025-12-08T23:59:59"),
+    id: "inbox-2",
+    type: "comment",
+    title: "New comment on TASK-7878",
+    description:
+      "Sarah commented: 'I've updated the design specs, please review when you have a chance.'",
+    isRead: false,
+    createdAt: new Date("2025-12-05T09:15:00"),
   },
   {
-    id: "derv1ws0",
-    code: "TASK-7839",
-    title: "We need to bypass the neural TCP card!",
-    status: {
-      name: "Backlog",
-      icon: "BACKLOG",
-      isCompleted: false,
-      isCanceled: false,
-    },
-    priority: "NONE",
-    dueDate: new Date("2025-12-05T23:59:59"),
+    id: "inbox-3",
+    type: "assignment",
+    title: "You were assigned to TASK-5562",
+    description:
+      "Mike assigned you to 'Fix the SAS interface connection issue' with high priority.",
+    isRead: true,
+    createdAt: new Date("2025-12-04T16:45:00"),
   },
   {
-    id: "5kma53ae",
-    code: "TASK-5562",
-    title:
-      "The SAS interface is down, bypass the open-source pixel so we can back up the PNG bandwidth!",
-    status: {
-      name: "Review",
-      icon: "REVIEW",
-      isCompleted: false,
-      isCanceled: false,
-    },
-    priority: "MEDIUM",
-    dueDate: new Date("2025-12-04T23:59:59"),
+    id: "inbox-4",
+    type: "mention",
+    title: "Alex mentioned you in a comment",
+    description:
+      "@you - thoughts on this approach? I'm considering using a different caching strategy.",
+    isRead: true,
+    createdAt: new Date("2025-12-04T14:20:00"),
   },
   {
-    id: "5kma53ae",
-    code: "TASK-5562",
-    title:
-      "The SAS interface is down, bypass the open-source pixel so we can back up the PNG bandwidth!",
-    status: {
-      name: "Canceled",
-      icon: "CANCELED",
-      isCompleted: false,
-      isCanceled: true,
-    },
-    priority: "CRITICAL",
-    dueDate: new Date("2025-12-06T23:59:59"),
+    id: "inbox-5",
+    type: "update",
+    title: "TASK-7839 status changed to In Progress",
+    description:
+      "The issue 'We need to bypass the neural TCP card' has been moved to In Progress.",
+    isRead: true,
+    createdAt: new Date("2025-12-03T11:00:00"),
   },
 ];
 
-export type Issue = {
+export type InboxItem = {
   id: string;
-  code: string;
+  type: "mention" | "comment" | "assignment" | "update";
   title: string;
-  status: {
-    name: string;
-    icon: string;
-    isCompleted: boolean;
-    isCanceled: boolean;
-  };
-  priority: string;
-  dueDate: Date;
+  description: string;
+  isRead: boolean;
+  createdAt: Date;
 };
 
-export const columns: ColumnDef<Issue>[] = [
+const typeIcons: Record<InboxItem["type"], React.ReactNode> = {
+  mention: <AtSign className="size-4 text-blue-500" />,
+  comment: <MessageSquare className="size-4 text-green-500" />,
+  assignment: <Bell className="size-4 text-orange-500" />,
+  update: <Circle className="size-4 text-muted-foreground" />,
+};
+
+export const columns: ColumnDef<InboxItem>[] = [
   {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        ID
-        <ArrowUpDown className="ml-1 size-3" />
-      </div>
-    ),
+    accessorKey: "status",
+    header: () => <span className="sr-only">Status</span>,
     cell: ({ row }) => (
-      <div className="capitalize text-xs font-medium text-muted-foreground">
-        {row.original.code}
+      <div className="flex items-center justify-center">
+        {row.original.isRead ? (
+          <Check className="size-4 text-muted-foreground" />
+        ) : (
+          <Circle className="size-2 fill-primary text-primary" />
+        )}
       </div>
     ),
+    size: 40,
+  },
+  {
+    accessorKey: "type",
+    header: () => <span className="sr-only">Type</span>,
+    cell: ({ row }) => (
+      <div className="flex items-center justify-center">
+        {typeIcons[row.original.type]}
+      </div>
+    ),
+    size: 40,
   },
   {
     accessorKey: "title",
@@ -153,82 +139,41 @@ export const columns: ColumnDef<Issue>[] = [
         className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Title
+        Notification
         <ArrowUpDown className="ml-1 size-3" />
       </div>
     ),
     cell: ({ row }) => (
-      <div className="capitalize text-xs font-medium max-w-xs md:max-w-md overflow-hidden text-ellipsis">
-        {row.original.title}
+      <div className="space-y-0.5">
+        <div
+          className={cn(
+            "text-xs font-medium max-w-md overflow-hidden text-ellipsis",
+            !row.original.isRead && "font-semibold"
+          )}
+        >
+          {row.original.title}
+        </div>
+        <div className="text-xs text-muted-foreground max-w-md overflow-hidden text-ellipsis line-clamp-1">
+          {row.original.description}
+        </div>
       </div>
     ),
   },
   {
-    accessorKey: "status",
-    accessorFn: (row) => row.status.name,
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <div
         className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Status
-        <ArrowUpDown className="ml-1 size-3" />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize text-xs font-medium max-w-xs overflow-hidden text-ellipsis flex items-center gap-1">
-        {statusIcon[row.original.status.icon]}
-        {row.original.status.name}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "priority",
-    header: ({ column }) => (
-      <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Priority
-        <ArrowUpDown className="ml-1 size-3" />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="max-w-xs overflow-hidden text-ellipsis">
-        {priority[row.original.priority]}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "due",
-    accessorFn: (row) => row.dueDate,
-    header: ({ column }) => (
-      <div
-        className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Due
+        Time
         <ArrowUpDown className="ml-1 size-3" />
       </div>
     ),
     cell: ({ row }) => {
-      const overdue = row.original.dueDate < new Date();
-      const time = moment(row.original.dueDate).fromNow();
-      const isToday =
-        row.original.dueDate.toDateString() === new Date().toDateString();
+      const time = moment(row.original.createdAt).fromNow();
       return (
-        <div
-          className={cn(
-            "capitalize flex items-center gap-1 text-xs font-medium",
-            isToday ? "text-yellow-500" : "",
-            overdue ? "text-destructive" : ""
-          )}
-        >
-          {overdue ? (
-            <TimerOff className="size-4" />
-          ) : (
-            <Timer className="size-4" />
-          )}
+        <div className="text-xs font-medium text-muted-foreground whitespace-nowrap">
           {time}
         </div>
       );
@@ -236,7 +181,7 @@ export const columns: ColumnDef<Issue>[] = [
   },
 ];
 
-export function TableIssues() {
+export function TableInbox() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -269,20 +214,24 @@ export function TableIssues() {
       <div className="flex gap-2 items-center justify-between">
         <div className="flex gap-2 items-center">
           <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            Assigned
+            All
           </div>
           <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            Created
+            Unread
+          </div>
+          <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent flex items-center gap-1">
+            <Archive className="size-3" />
+            Archived
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1">
+          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
             <ListFilter className="size-4" />
             Filter
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1">
+              <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
                 <Settings2 className="size-4" />
                 Display
               </div>
@@ -336,7 +285,10 @@ export function TableIssues() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="border-b border-border/50"
+                  className={cn(
+                    "border-b border-border/50 cursor-pointer",
+                    !row.original.isRead && "bg-muted/30"
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -357,37 +309,13 @@ export function TableIssues() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  No notifications.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      {/* <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div> */}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
 import {
   LockIcon,
   Palette,
@@ -8,6 +7,7 @@ import {
   UserIcon,
   MonitorSmartphone,
   Settings,
+  CreditCard,
 } from "lucide-react";
 import { env } from "@/env";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,20 +16,23 @@ import { SettingsPasswordPage } from "./_components/password/password";
 import { SettingsSessionsPage } from "./_components/sessions/sessions";
 import { SettingsTwoFactorAuthPage } from "./_components/two-factor-auth/two-factor-auth";
 import { SettingsAppearancePage } from "./_components/appearance/apperance";
+import { SettingsBillingPage } from "./_components/billing/billing";
+import { PageDescription, PageTitle } from "@/components/page";
+import SeparatorFull from "@/components/separator-full";
 
 export default function SettingsPage() {
   return (
     <div className="flex flex-col h-full w-full mx-auto space-y-4">
       <div className="space-y-0">
-        <div className="flex items-center gap-2">
+        <PageTitle className="flex items-center gap-2">
           <Settings className="size-5" />
-          <h2 className="text-lg font-medium">Settings</h2>
-        </div>
-        <p className="text-xs text-muted-foreground">
+          Settings
+        </PageTitle>
+        <PageDescription>
           Manage your account settings and security preferences.
-        </p>
+        </PageDescription>
       </div>
-      <div className="flex w-dwh border-t -mx-4" />
+      <SeparatorFull />
       <Tabs
         defaultValue="profile"
         className="w-full md:w-3xl mx-auto space-y-8"
@@ -54,6 +57,10 @@ export default function SettingsPage() {
                 Two-Factor Auth
               </TabsTrigger>
             )}
+            <TabsTrigger value="billing">
+              <CreditCard className="size-4" />
+              Billing
+            </TabsTrigger>
             <TabsTrigger value="appearance">
               <Palette className="size-4" />
               Appearance
@@ -71,6 +78,9 @@ export default function SettingsPage() {
         </TabsContent>
         <TabsContent value="two-factor-auth">
           <SettingsTwoFactorAuthPage />
+        </TabsContent>
+        <TabsContent value="billing">
+          <SettingsBillingPage />
         </TabsContent>
         <TabsContent value="appearance">
           <SettingsAppearancePage />

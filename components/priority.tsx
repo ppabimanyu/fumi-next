@@ -1,28 +1,40 @@
 import React from "react";
-import { Signal, SignalHigh, SignalLow, SignalMedium } from "lucide-react";
+import {
+  Ellipsis,
+  Signal,
+  SignalHigh,
+  SignalLow,
+  SignalMedium,
+} from "lucide-react";
 
 export const priority: Record<string, React.ReactNode> = {
-  low: (
+  NONE: (
     <div className="flex items-center gap-1 text-xs font-medium">
-      <SignalLow className="size-5 text-green-500" />
+      <Ellipsis className="size-5" />
+      No Priority
+    </div>
+  ),
+  LOW: (
+    <div className="flex items-center gap-1 text-xs font-medium">
+      <SignalLow className="size-5" />
       Low
     </div>
   ),
-  medium: (
+  MEDIUM: (
     <div className="flex items-center gap-1 text-xs font-medium">
-      <SignalMedium className="size-5 text-yellow-500" />
+      <SignalMedium className="size-5" />
       Medium
     </div>
   ),
-  high: (
+  HIGH: (
     <div className="flex items-center gap-1 text-xs font-medium">
-      <SignalHigh className="size-5 text-red-500" />
+      <SignalHigh className="size-5" />
       High
     </div>
   ),
-  critical: (
+  CRITICAL: (
     <div className="flex items-center gap-1 text-xs font-medium">
-      <Signal className="size-5 text-pink-500" />
+      <Signal className="size-5" />
       Critical
     </div>
   ),

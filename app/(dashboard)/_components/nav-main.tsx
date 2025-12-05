@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, SquareTerminal, type LucideIcon } from "lucide-react";
+import { ChevronRight, Inbox, ScanText, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -29,10 +28,22 @@ const navMainItems: {
     url: string;
   }[];
 }[] = [
+  // {
+  //   title: "Dashboard",
+  //   url: "/dashboard",
+  //   icon: SquareTerminal,
+  //   items: [],
+  // },
   {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: SquareTerminal,
+    title: "Inbox",
+    url: "/inbox",
+    icon: Inbox,
+    items: [],
+  },
+  {
+    title: "My Issues",
+    url: "/my-issues",
+    icon: ScanText,
     items: [],
   },
 ];
@@ -42,7 +53,7 @@ export function NavMain() {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>
         {navMainItems.map((item) => {
           if (item.items?.length === 0) {
