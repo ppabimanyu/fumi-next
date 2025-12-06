@@ -13,23 +13,12 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ListFilter,
-  Settings2,
-  MoreHorizontal,
-  Shield,
-  UserPlus,
-  Mail,
-  Crown,
-  User,
-} from "lucide-react";
+import { ArrowUpDown, Settings2, Shield, Crown, User } from "lucide-react";
 
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -43,10 +32,36 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import SeparatorFull from "@/components/separator-full";
 import { cn } from "@/lib/utils";
-import moment from "moment";
+import { InviteMemberDialog } from "./invite-member-dialog";
+import { MemberActions } from "./member-actions";
+import { Button } from "@/components/ui/button";
+
+// Filter options
+const roleFilterOptions = [
+  {
+    value: "owner",
+    label: "Owner",
+    icon: <Crown className="size-3 text-yellow-500" />,
+  },
+  {
+    value: "admin",
+    label: "Admin",
+    icon: <Shield className="size-3 text-blue-500" />,
+  },
+  {
+    value: "member",
+    label: "Member",
+    icon: <User className="size-3 text-muted-foreground" />,
+  },
+];
+
+const statusFilterOptions = [
+  { value: "active", label: "Active" },
+  { value: "pending", label: "Pending" },
+  { value: "inactive", label: "Inactive" },
+];
 
 const data: TeamMember[] = [
   {
@@ -113,15 +128,15 @@ const roleIcons: Record<TeamMember["role"], React.ReactNode> = {
 };
 
 const roleBadges: Record<TeamMember["role"], string> = {
-  owner: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20",
-  admin: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-  member: "bg-muted text-muted-foreground border-border",
+  owner: "bg-yellow-500/10 text-yellow-600 border-none",
+  admin: "bg-blue-500/10 text-blue-600 border-none",
+  member: "bg-muted text-muted-foreground border-none",
 };
 
 const statusBadges: Record<TeamMember["status"], string> = {
-  active: "bg-green-500/10 text-green-600 border-green-500/20",
-  pending: "bg-orange-500/10 text-orange-600 border-orange-500/20",
-  inactive: "bg-muted text-muted-foreground border-border",
+  active: "bg-green-500/10 text-green-600 border-none",
+  pending: "bg-orange-500/10 text-orange-600 border-none",
+  inactive: "bg-muted text-muted-foreground border-none",
 };
 
 export const columns: ColumnDef<TeamMember>[] = [
@@ -222,34 +237,11 @@ export const columns: ColumnDef<TeamMember>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8">
-            <MoreHorizontal className="size-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel className="text-xs">Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-xs">
-            <Mail className="size-3 mr-2" />
-            Send email
-          </DropdownMenuItem>
-          <DropdownMenuItem className="text-xs">
-            <Shield className="size-3 mr-2" />
-            Change role
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-xs text-destructive">
-            Remove from team
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({ row }) => <MemberActions member={row.original} />,
   },
 ];
+
+import moment from "moment";
 
 export function TableMembers() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -260,8 +252,27 @@ export function TableMembers() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // Filter states
+  const [roleFilter, setRoleFilter] = React.useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = React.useState<string[]>([]);
+
+  // Filter data based on selections
+  const filteredData = React.useMemo(() => {
+    return data.filter((member) => {
+      // Role filter
+      if (roleFilter.length > 0 && !roleFilter.includes(member.role)) {
+        return false;
+      }
+      // Status filter
+      if (statusFilter.length > 0 && !statusFilter.includes(member.status)) {
+        return false;
+      }
+      return true;
+    });
+  }, [roleFilter, statusFilter]);
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -294,14 +305,119 @@ export function TableMembers() {
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
-            <UserPlus className="size-4" />
-            Invite
-          </div>
-          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
-            <ListFilter className="size-4" />
-            Filter
-          </div>
+          <InviteMemberDialog />
+          {/* Role Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  "flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent",
+                  roleFilter.length > 0 &&
+                    "bg-primary/10 border-primary text-primary"
+                )}
+              >
+                {roleFilter.length > 0 && (
+                  <span className="bg-primary text-primary-foreground rounded-full size-4 flex items-center justify-center text-[10px]">
+                    {roleFilter.length}
+                  </span>
+                )}
+                Role
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel className="text-xs">
+                Filter by Role
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {roleFilterOptions.map((option) => (
+                <DropdownMenuCheckboxItem
+                  key={option.value}
+                  className="text-xs"
+                  checked={roleFilter.includes(option.value)}
+                  onCheckedChange={(checked) => {
+                    setRoleFilter((prev) =>
+                      checked
+                        ? [...prev, option.value]
+                        : prev.filter((v) => v !== option.value)
+                    );
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    {option.icon}
+                    {option.label}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+              {roleFilter.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs h-8"
+                    onClick={() => setRoleFilter([])}
+                  >
+                    Clear
+                  </Button>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Status Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  "flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent",
+                  statusFilter.length > 0 &&
+                    "bg-primary/10 border-primary text-primary"
+                )}
+              >
+                {statusFilter.length > 0 && (
+                  <span className="bg-primary text-primary-foreground rounded-full size-4 flex items-center justify-center text-[10px]">
+                    {statusFilter.length}
+                  </span>
+                )}
+                Status
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel className="text-xs">
+                Filter by Status
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {statusFilterOptions.map((option) => (
+                <DropdownMenuCheckboxItem
+                  key={option.value}
+                  className="text-xs"
+                  checked={statusFilter.includes(option.value)}
+                  onCheckedChange={(checked) => {
+                    setStatusFilter((prev) =>
+                      checked
+                        ? [...prev, option.value]
+                        : prev.filter((v) => v !== option.value)
+                    );
+                  }}
+                >
+                  {option.label}
+                </DropdownMenuCheckboxItem>
+              ))}
+              {statusFilter.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs h-8"
+                    onClick={() => setStatusFilter([])}
+                  >
+                    Clear
+                  </Button>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">

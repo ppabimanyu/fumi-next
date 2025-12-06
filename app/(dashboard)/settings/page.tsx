@@ -38,7 +38,7 @@ export default function SettingsPage() {
         className="w-full md:w-3xl mx-auto space-y-8"
       >
         <div>
-          <TabsList className="w-full overflow-scroll scrollbar-hidden">
+          <TabsList className="w-full overflow-x-auto">
             <TabsTrigger value="profile">
               <UserIcon className="size-4" />
               Profile

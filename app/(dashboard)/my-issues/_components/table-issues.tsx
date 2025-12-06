@@ -13,19 +13,14 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ListFilter,
-  Settings2,
-  Timer,
-  TimerOff,
-} from "lucide-react";
+import { ArrowUpDown, Settings2, Timer, TimerOff } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -41,6 +36,32 @@ import { cn } from "@/lib/utils";
 import { priority } from "@/components/priority";
 import moment from "moment";
 import { statusIcon } from "@/components/status-icon";
+import { IssueTableRow } from "./issue-table-row";
+import { Button } from "@/components/ui/button";
+
+// Filter options
+const statusFilterOptions = [
+  { value: "Backlog", label: "Backlog", icon: "BACKLOG" },
+  { value: "In Progress", label: "In Progress", icon: "IN_PROGRESS" },
+  { value: "Review", label: "Review", icon: "REVIEW" },
+  { value: "Done", label: "Done", icon: "DONE" },
+  { value: "Canceled", label: "Canceled", icon: "CANCELED" },
+];
+
+const priorityFilterOptions = [
+  { value: "NONE", label: "No Priority" },
+  { value: "LOW", label: "Low" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HIGH", label: "High" },
+  { value: "CRITICAL", label: "Critical" },
+];
+
+const dateFilterOptions = [
+  { value: "overdue", label: "Overdue" },
+  { value: "today", label: "Due Today" },
+  { value: "week", label: "Due This Week" },
+  { value: "month", label: "Due This Month" },
+];
 
 const data: Issue[] = [
   {
@@ -49,10 +70,16 @@ const data: Issue[] = [
     title:
       "You can't compress the program without quantifying the open-source SSD pixel!",
     status: {
+      id: "djwjdwkdwm",
       name: "Done",
       icon: "DONE",
       isCompleted: true,
       isCanceled: false,
+    },
+    project: {
+      id: "m5gr84i9",
+      name: "Project 1",
+      code: "PROJ1",
     },
     priority: "MEDIUM",
     dueDate: new Date("2025-12-09T23:59:59"),
@@ -63,10 +90,16 @@ const data: Issue[] = [
     title:
       "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
     status: {
+      id: "djwjd92w2S",
       name: "In Progress",
       icon: "IN_PROGRESS",
       isCompleted: false,
       isCanceled: false,
+    },
+    project: {
+      id: "m5gr84i9",
+      name: "Project 1",
+      code: "PROJ1",
     },
     priority: "HIGH",
     dueDate: new Date("2025-12-08T23:59:59"),
@@ -76,10 +109,16 @@ const data: Issue[] = [
     code: "TASK-7839",
     title: "We need to bypass the neural TCP card!",
     status: {
+      id: "wdowosiwjd",
       name: "Backlog",
       icon: "BACKLOG",
       isCompleted: false,
       isCanceled: false,
+    },
+    project: {
+      id: "m5gr84i9",
+      name: "Project 2",
+      code: "PROJ2",
     },
     priority: "NONE",
     dueDate: new Date("2025-12-05T23:59:59"),
@@ -90,10 +129,16 @@ const data: Issue[] = [
     title:
       "The SAS interface is down, bypass the open-source pixel so we can back up the PNG bandwidth!",
     status: {
+      id: "wdwdkowsd",
       name: "Review",
       icon: "REVIEW",
       isCompleted: false,
       isCanceled: false,
+    },
+    project: {
+      id: "m5gr84i9",
+      name: "Project 2",
+      code: "PROJ2",
     },
     priority: "MEDIUM",
     dueDate: new Date("2025-12-04T23:59:59"),
@@ -104,10 +149,16 @@ const data: Issue[] = [
     title:
       "The SAS interface is down, bypass the open-source pixel so we can back up the PNG bandwidth!",
     status: {
+      id: "kwmds92jwd",
       name: "Canceled",
       icon: "CANCELED",
       isCompleted: false,
       isCanceled: true,
+    },
+    project: {
+      id: "m5gr84i9",
+      name: "Project 2",
+      code: "PROJ2",
     },
     priority: "CRITICAL",
     dueDate: new Date("2025-12-06T23:59:59"),
@@ -119,10 +170,16 @@ export type Issue = {
   code: string;
   title: string;
   status: {
+    id: string;
     name: string;
     icon: string;
     isCompleted: boolean;
     isCanceled: boolean;
+  };
+  project: {
+    id: string;
+    name: string;
+    code: string;
   };
   priority: string;
   dueDate: Date;
@@ -177,7 +234,7 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="capitalize text-xs font-medium max-w-xs overflow-hidden text-ellipsis flex items-center gap-1">
-        {statusIcon[row.original.status.icon]}
+        {statusIcon(row.original.status.icon)}
         {row.original.status.name}
       </div>
     ),
@@ -195,7 +252,7 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="max-w-xs overflow-hidden text-ellipsis">
-        {priority[row.original.priority]}
+        {priority(row.original.priority)?.icon}
       </div>
     ),
   },
@@ -245,8 +302,63 @@ export function TableIssues() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // Filter states
+  const [statusFilter, setStatusFilter] = React.useState<string[]>([]);
+  const [priorityFilter, setPriorityFilter] = React.useState<string[]>([]);
+  const [dateFilter, setDateFilter] = React.useState<string[]>([]);
+
+  // Filter data based on selections
+  const filteredData = React.useMemo(() => {
+    return data.filter((issue) => {
+      // Status filter
+      if (
+        statusFilter.length > 0 &&
+        !statusFilter.includes(issue.status.name)
+      ) {
+        return false;
+      }
+      // Priority filter
+      if (
+        priorityFilter.length > 0 &&
+        !priorityFilter.includes(issue.priority)
+      ) {
+        return false;
+      }
+      // Date filter
+      if (dateFilter.length > 0) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const dueDate = new Date(issue.dueDate);
+        dueDate.setHours(0, 0, 0, 0);
+
+        const matchesAnyDateFilter = dateFilter.some((filter) => {
+          switch (filter) {
+            case "overdue":
+              return dueDate < today;
+            case "today":
+              return dueDate.getTime() === today.getTime();
+            case "week": {
+              const weekFromNow = new Date(today);
+              weekFromNow.setDate(weekFromNow.getDate() + 7);
+              return dueDate >= today && dueDate <= weekFromNow;
+            }
+            case "month": {
+              const monthFromNow = new Date(today);
+              monthFromNow.setMonth(monthFromNow.getMonth() + 1);
+              return dueDate >= today && dueDate <= monthFromNow;
+            }
+            default:
+              return true;
+          }
+        });
+        if (!matchesAnyDateFilter) return false;
+      }
+      return true;
+    });
+  }, [statusFilter, priorityFilter, dateFilter]);
+
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -276,10 +388,173 @@ export function TableIssues() {
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1">
-            <ListFilter className="size-4" />
-            Filter
-          </div>
+          {/* Status Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  "flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent",
+                  statusFilter.length > 0 &&
+                    "bg-primary/10 border-primary text-primary"
+                )}
+              >
+                {statusFilter.length > 0 && (
+                  <span className="bg-primary text-primary-foreground rounded-full size-4 flex items-center justify-center text-[10px]">
+                    {statusFilter.length}
+                  </span>
+                )}
+                Status
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel className="text-xs">
+                Filter by Status
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {statusFilterOptions.map((option) => (
+                <DropdownMenuCheckboxItem
+                  key={option.value}
+                  className="text-xs"
+                  checked={statusFilter.includes(option.value)}
+                  onCheckedChange={(checked) => {
+                    setStatusFilter((prev) =>
+                      checked
+                        ? [...prev, option.value]
+                        : prev.filter((v) => v !== option.value)
+                    );
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    {statusIcon(option.icon)}
+                    {option.label}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+              {statusFilter.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs h-8"
+                    onClick={() => setStatusFilter([])}
+                  >
+                    Clear
+                  </Button>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Priority Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  "flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent",
+                  priorityFilter.length > 0 &&
+                    "bg-primary/10 border-primary text-primary"
+                )}
+              >
+                {priorityFilter.length > 0 && (
+                  <span className="bg-primary text-primary-foreground rounded-full size-4 flex items-center justify-center text-[10px]">
+                    {priorityFilter.length}
+                  </span>
+                )}
+                Priority
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel className="text-xs">
+                Filter by Priority
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {priorityFilterOptions.map((option) => (
+                <DropdownMenuCheckboxItem
+                  key={option.value}
+                  className="text-xs"
+                  checked={priorityFilter.includes(option.value)}
+                  onCheckedChange={(checked) => {
+                    setPriorityFilter((prev) =>
+                      checked
+                        ? [...prev, option.value]
+                        : prev.filter((v) => v !== option.value)
+                    );
+                  }}
+                >
+                  {priority(option.value)?.icon || option.label}
+                </DropdownMenuCheckboxItem>
+              ))}
+              {priorityFilter.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs h-8"
+                    onClick={() => setPriorityFilter([])}
+                  >
+                    Clear
+                  </Button>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Date Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div
+                className={cn(
+                  "flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent",
+                  dateFilter.length > 0 &&
+                    "bg-primary/10 border-primary text-primary"
+                )}
+              >
+                {dateFilter.length > 0 && (
+                  <span className="bg-primary text-primary-foreground rounded-full size-4 flex items-center justify-center text-[10px]">
+                    {dateFilter.length}
+                  </span>
+                )}
+                Due Date
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel className="text-xs">
+                Filter by Due Date
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {dateFilterOptions.map((option) => (
+                <DropdownMenuCheckboxItem
+                  key={option.value}
+                  className="text-xs"
+                  checked={dateFilter.includes(option.value)}
+                  onCheckedChange={(checked) => {
+                    setDateFilter((prev) =>
+                      checked
+                        ? [...prev, option.value]
+                        : prev.filter((v) => v !== option.value)
+                    );
+                  }}
+                >
+                  {option.label}
+                </DropdownMenuCheckboxItem>
+              ))}
+              {dateFilter.length > 0 && (
+                <>
+                  <DropdownMenuSeparator />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full text-xs h-8"
+                    onClick={() => setDateFilter([])}
+                  >
+                    Clear
+                  </Button>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1">
@@ -332,25 +607,9 @@ export function TableIssues() {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-b border-border/50"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className="first:pl-8 last:pr-8 py-3"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table
+                .getRowModel()
+                .rows.map((row) => <IssueTableRow key={row.id} row={row} />)
             ) : (
               <TableRow>
                 <TableCell

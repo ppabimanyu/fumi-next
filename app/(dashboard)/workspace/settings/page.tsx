@@ -1,7 +1,7 @@
 import { PageDescription, PageTitle } from "@/components/page";
 import SeparatorFull from "@/components/separator-full";
 import { Settings } from "lucide-react";
-import { WorkspaceGeneralSettings } from "./_components/general";
+import { WorkspaceSettings } from "./_components/workspace-settings";
 
 export default function WorkspaceSettingsPage() {
   return (
@@ -17,7 +17,7 @@ export default function WorkspaceSettingsPage() {
       </div>
       <SeparatorFull />
       <div className="w-full md:w-3xl mx-auto">
-        <WorkspaceGeneralSettings />
+        <WorkspaceSettings />
       </div>
     </div>
   );
