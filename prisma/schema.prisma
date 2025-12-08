@@ -14,37 +14,44 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id               String   @id
+  name             String
+  email            String
+  emailVerified    Boolean  @default(false)
+  image            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  twoFactorEnabled Boolean? @default(false)
 
-  twoFactorEnabled Boolean?    @default(false)
-  twofactors       TwoFactor[]
+  sessions                   Session[]
+  accounts                   Account[]
+  twofactors                 TwoFactor[]
+  subscription               Subscription?
+  workspaceMembers           WorkspaceMember[]
+  workspaceMemberInvitations WorkspaceMemberInvitation[]
+  issues                     Issue[]
+  assignees                  Issue[]                     @relation("assignees")
 
   @@unique([email])
-  @@map("user")
+  @@map("t_users")
 }
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String   @id
+  expiresAt         DateTime
+  token             String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  ipAddress         String?
+  userAgent         String?
+  userId            String
+  activeWorkspaceId String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
   @@index([userId])
-  @@map("session")
+  @@map("t_sessions")
 }
 
 model Account {
@@ -52,7 +59,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -63,8 +69,10 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
-  @@map("account")
+  @@map("t_accounts")
 }
 
 model Verification {
@@ -76,7 +84,7 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@index([identifier])
-  @@map("verification")
+  @@map("t_verifications")
 }
 
 model TwoFactor {
@@ -84,9 +92,168 @@ model TwoFactor {
   secret      String
   backupCodes String
   userId      String
-  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([secret])
   @@index([userId])
-  @@map("twoFactor")
+  @@map("t_two_factors")
+}
+
+model Plan {
+  id            String         @id @default(uuid())
+  name          String
+  price         Float
+  priceCurrency String
+  maxWorkspace  Int
+  maxProject    Int
+  aiAccess      Boolean
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+
+  @@map("t_plans")
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  userId    String
+  planId    String
+  startedAt DateTime @default(now())
+  endedAt   DateTime @default(now())
+  paymentId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+  @@map("t_subscriptions")
+}
+
+enum WorkspaceType {
+  PERSONAL
+  ORGANIZATION
+}
+
+model Workspace {
+  id                         String                      @id @default(uuid())
+  name                       String
+  workspaceType              WorkspaceType
+  image                      String?
+  description                String?
+  createdAt                  DateTime                    @default(now())
+  updatedAt                  DateTime                    @updatedAt
+  workspaceMembers           WorkspaceMember[]
+  workspaceMemberInvitations WorkspaceMemberInvitation[]
+  projects                   Project[]
+
+  @@map("t_workspaces")
+}
+
+enum WorkspaceMemberRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum WorkspaceMemberStatus {
+  ACTIVE
+  PENDING
+}
+
+model WorkspaceMember {
+  id          String                @id @default(uuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceMemberRole
+  status      WorkspaceMemberStatus
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("t_workspace_members")
+}
+
+model WorkspaceMemberInvitation {
+  id          String              @id @default(uuid())
+  workspaceId String
+  email       String
+  role        WorkspaceMemberRole
+  token       String
+  invitorId   String
+  expiresAt   DateTime
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  invitor   User      @relation(fields: [invitorId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@map("t_workspace_member_invitations")
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @default("PROJ")
+  image       String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  workspaceId String
+
+  workspace     Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  issueStatuses IssueStatus[]
+
+  @@map("t_projects")
+}
+
+model IssueStatus {
+  id          String   @id @default(uuid())
+  name        String
+  icon        String
+  isCompleted Boolean  @default(false)
+  isCanceled  Boolean  @default(false)
+  projectId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("t_issue_statuses")
+}
+
+model Issue {
+  id          String    @id @default(uuid())
+  code        String
+  title       String
+  priority    String
+  description String?
+  startDate   DateTime?
+  dueDate     DateTime?
+  createdById String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdBy     User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  subTaskIssues SubTaskIssue[]
+  assignees     User[]         @relation("assignees")
+
+  @@map("t_issues")
+}
+
+model SubTaskIssue {
+  id          String   @id @default(uuid())
+  issueId     String
+  content     String
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@map("t_sub_task_issues")
 }

@@ -23,6 +23,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -44,6 +45,18 @@ export function NavUser() {
         .toUpperCase()
         .substring(0, 2)
     : "U";
+
+  if (session.isPending) {
+    return (
+      <div className="flex items-center gap-2 w-full">
+        <Skeleton className="h-10 w-12 rounded-full" />
+        <div className="space-y-2 w-full">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <SidebarMenu>

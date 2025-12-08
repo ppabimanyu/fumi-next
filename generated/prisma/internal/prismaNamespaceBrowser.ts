@@ -55,7 +55,16 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  TwoFactor: 'TwoFactor'
+  TwoFactor: 'TwoFactor',
+  Plan: 'Plan',
+  Subscription: 'Subscription',
+  Workspace: 'Workspace',
+  WorkspaceMember: 'WorkspaceMember',
+  WorkspaceMemberInvitation: 'WorkspaceMemberInvitation',
+  Project: 'Project',
+  IssueStatus: 'IssueStatus',
+  Issue: 'Issue',
+  SubTaskIssue: 'SubTaskIssue'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -96,7 +105,8 @@ export const SessionScalarFieldEnum = {
   updatedAt: 'updatedAt',
   ipAddress: 'ipAddress',
   userAgent: 'userAgent',
-  userId: 'userId'
+  userId: 'userId',
+  activeWorkspaceId: 'activeWorkspaceId'
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
@@ -141,6 +151,132 @@ export const TwoFactorScalarFieldEnum = {
 } as const
 
 export type TwoFactorScalarFieldEnum = (typeof TwoFactorScalarFieldEnum)[keyof typeof TwoFactorScalarFieldEnum]
+
+
+export const PlanScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  price: 'price',
+  priceCurrency: 'priceCurrency',
+  maxWorkspace: 'maxWorkspace',
+  maxProject: 'maxProject',
+  aiAccess: 'aiAccess',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlanScalarFieldEnum = (typeof PlanScalarFieldEnum)[keyof typeof PlanScalarFieldEnum]
+
+
+export const SubscriptionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  planId: 'planId',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  paymentId: 'paymentId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const WorkspaceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  workspaceType: 'workspaceType',
+  image: 'image',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof typeof WorkspaceScalarFieldEnum]
+
+
+export const WorkspaceMemberScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  userId: 'userId',
+  role: 'role',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkspaceMemberScalarFieldEnum = (typeof WorkspaceMemberScalarFieldEnum)[keyof typeof WorkspaceMemberScalarFieldEnum]
+
+
+export const WorkspaceMemberInvitationScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  email: 'email',
+  role: 'role',
+  token: 'token',
+  invitorId: 'invitorId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkspaceMemberInvitationScalarFieldEnum = (typeof WorkspaceMemberInvitationScalarFieldEnum)[keyof typeof WorkspaceMemberInvitationScalarFieldEnum]
+
+
+export const ProjectScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  code: 'code',
+  image: 'image',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  workspaceId: 'workspaceId'
+} as const
+
+export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
+
+
+export const IssueStatusScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  icon: 'icon',
+  isCompleted: 'isCompleted',
+  isCanceled: 'isCanceled',
+  projectId: 'projectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IssueStatusScalarFieldEnum = (typeof IssueStatusScalarFieldEnum)[keyof typeof IssueStatusScalarFieldEnum]
+
+
+export const IssueScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  priority: 'priority',
+  description: 'description',
+  startDate: 'startDate',
+  dueDate: 'dueDate',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IssueScalarFieldEnum = (typeof IssueScalarFieldEnum)[keyof typeof IssueScalarFieldEnum]
+
+
+export const SubTaskIssueScalarFieldEnum = {
+  id: 'id',
+  issueId: 'issueId',
+  content: 'content',
+  isCompleted: 'isCompleted',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SubTaskIssueScalarFieldEnum = (typeof SubTaskIssueScalarFieldEnum)[keyof typeof SubTaskIssueScalarFieldEnum]
 
 
 export const SortOrder = {

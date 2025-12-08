@@ -15,11 +15,107 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Building2, Image as ImageIcon, TriangleAlert } from "lucide-react";
+import { Building2, Camera, Loader2, TriangleAlert } from "lucide-react";
 import { LeaveWorkspaceDialog } from "./leave-workspace-dialog";
 import { DeleteWorkspaceDialog } from "./delete-workspace-dialog";
+import { trpc } from "@/lib/trpc/client";
+import { toast } from "sonner";
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
+import { useRef, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function WorkspaceSettings() {
+  const activeWorkspaceQuery = trpc.workspace.getActiveWorkspace.useQuery();
+  if (activeWorkspaceQuery.isError) {
+    toast.error("Failed to load active workspace");
+  }
+
+  // Image upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const uploadImageMutation = trpc.workspace.uploadImage.useMutation({
+    onSuccess: (data) => {
+      toast.success(data.message);
+      activeWorkspaceQuery.refetch();
+    },
+    onError: (error) => {
+      toast.error(error.message);
+      setPreviewImage(null);
+    },
+  });
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Invalid file type. Allowed: JPG, PNG, GIF, WebP");
+      return;
+    }
+
+    // Validate file size (800KB)
+    if (file.size > 800 * 1024) {
+      toast.error("File too large. Maximum size is 800KB");
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setPreviewImage(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Convert to base64 and upload
+    const arrayBuffer = await file.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
+
+    uploadImageMutation.mutate({
+      fileBase64: base64,
+      fileName: file.name,
+      contentType: file.type,
+    });
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  // Update workspace
+  const updateWorkspaceMutation = trpc.workspace.updateWorkspace.useMutation({
+    onSuccess: () => {
+      toast.success("Workspace updated successfully");
+      activeWorkspaceQuery.refetch();
+    },
+    onError: () => {
+      toast.error("Failed to update workspace");
+    },
+  });
+
+  const form = useForm({
+    defaultValues: {
+      name: activeWorkspaceQuery.data?.name ?? "",
+      description: activeWorkspaceQuery.data?.description ?? "",
+    },
+    validators: {
+      onChange: z.object({
+        name: z.string().min(1).max(50),
+        description: z.string(),
+      }),
+    },
+    onSubmit: async ({ value }) => {
+      updateWorkspaceMutation.mutate({
+        name: value.name?.trim(),
+        description: value.description?.trim(),
+      });
+    },
+  });
+
   return (
     <div className="space-y-8">
       <Section>
@@ -42,9 +138,46 @@ export function WorkspaceSettings() {
             </SectionItemHeader>
             <SectionItemContent>
               <div className="flex items-center gap-4">
-                <div className="size-12 rounded-lg bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground/25 cursor-pointer hover:border-muted-foreground/50 transition-colors">
-                  <ImageIcon className="size-5 text-muted-foreground" />
-                </div>
+                {/* Hidden file input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="avatar-upload"
+                />
+
+                {/* Avatar with click to upload */}
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadImageMutation.isPending}
+                  className="relative group cursor-pointer disabled:cursor-not-allowed"
+                >
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage
+                      src={
+                        previewImage || activeWorkspaceQuery.data?.image || ""
+                      }
+                      alt={activeWorkspaceQuery.data?.name || "User"}
+                    />
+                    <AvatarFallback className="text-xl">
+                      {activeWorkspaceQuery.data?.name
+                        ?.slice(0, 2)
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    {uploadImageMutation.isPending ? (
+                      <Loader2 className="size-5 text-white animate-spin" />
+                    ) : (
+                      <Camera className="size-5 text-white" />
+                    )}
+                  </div>
+                </button>
               </div>
             </SectionItemContent>
           </SectionItem>
@@ -58,7 +191,16 @@ export function WorkspaceSettings() {
               </SectionItemDescription>
             </SectionItemHeader>
             <SectionItemContent className="md:w-xs">
-              <Input placeholder="Acme Inc." defaultValue="My Workspace" />
+              <form.Field name="name">
+                {(field) => (
+                  <Input
+                    placeholder="Workspace Name"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={form.handleSubmit}
+                  />
+                )}
+              </form.Field>
             </SectionItemContent>
           </SectionItem>
           <Separator />
@@ -70,11 +212,17 @@ export function WorkspaceSettings() {
               </SectionItemDescription>
             </SectionItemHeader>
             <SectionItemContent className="md:w-md">
-              <Textarea
-                placeholder="Describe your workspace..."
-                rows={3}
-                defaultValue="A workspace for managing projects and collaborating with team members."
-              />
+              <form.Field name="description">
+                {(field) => (
+                  <Textarea
+                    placeholder="Describe your workspace..."
+                    rows={3}
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={form.handleSubmit}
+                  />
+                )}
+              </form.Field>
             </SectionItemContent>
           </SectionItem>
         </SectionContent>
@@ -91,6 +239,15 @@ export function WorkspaceSettings() {
           </SectionDescription>
         </SectionHeader>
         <SectionContent>
+          {activeWorkspaceQuery.data?.workspaceType === "PERSONAL" && (
+            <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground mb-4">
+              <p className="font-medium text-sm">Personal Workspace</p>
+              <p className="mt-1 text-xs">
+                This is your personal workspace. You cannot leave or delete it.
+                Personal workspaces are created automatically for each user.
+              </p>
+            </div>
+          )}
           <SectionItem>
             <SectionItemHeader>
               <SectionItemTitle>Leave Workspace</SectionItemTitle>
@@ -100,7 +257,11 @@ export function WorkspaceSettings() {
               </SectionItemDescription>
             </SectionItemHeader>
             <SectionItemContent>
-              <LeaveWorkspaceDialog />
+              <LeaveWorkspaceDialog
+                disabled={
+                  activeWorkspaceQuery.data?.workspaceType === "PERSONAL"
+                }
+              />
             </SectionItemContent>
           </SectionItem>
           <Separator />
@@ -114,7 +275,12 @@ export function WorkspaceSettings() {
               </SectionItemDescription>
             </SectionItemHeader>
             <SectionItemContent>
-              <DeleteWorkspaceDialog />
+              <DeleteWorkspaceDialog
+                workspaceName={activeWorkspaceQuery.data?.name ?? ""}
+                disabled={
+                  activeWorkspaceQuery.data?.workspaceType === "PERSONAL"
+                }
+              />
             </SectionItemContent>
           </SectionItem>
         </SectionContent>

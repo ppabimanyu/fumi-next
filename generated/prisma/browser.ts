@@ -42,3 +42,48 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type TwoFactor = Prisma.TwoFactorModel
+/**
+ * Model Plan
+ * 
+ */
+export type Plan = Prisma.PlanModel
+/**
+ * Model Subscription
+ * 
+ */
+export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model Workspace
+ * 
+ */
+export type Workspace = Prisma.WorkspaceModel
+/**
+ * Model WorkspaceMember
+ * 
+ */
+export type WorkspaceMember = Prisma.WorkspaceMemberModel
+/**
+ * Model WorkspaceMemberInvitation
+ * 
+ */
+export type WorkspaceMemberInvitation = Prisma.WorkspaceMemberInvitationModel
+/**
+ * Model Project
+ * 
+ */
+export type Project = Prisma.ProjectModel
+/**
+ * Model IssueStatus
+ * 
+ */
+export type IssueStatus = Prisma.IssueStatusModel
+/**
+ * Model Issue
+ * 
+ */
+export type Issue = Prisma.IssueModel
+/**
+ * Model SubTaskIssue
+ * 
+ */
+export type SubTaskIssue = Prisma.SubTaskIssueModel

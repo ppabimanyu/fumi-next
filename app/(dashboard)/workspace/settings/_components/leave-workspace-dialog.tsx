@@ -74,7 +74,11 @@ const roleIcons: Record<TeamMember["role"], React.ReactNode> = {
 
 type DialogStep = "confirm" | "transfer-ownership" | "cannot-leave";
 
-export function LeaveWorkspaceDialog() {
+export function LeaveWorkspaceDialog({
+  disabled = false,
+}: {
+  disabled?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedNewOwner, setSelectedNewOwner] = useState<TeamMember | null>(
@@ -330,7 +334,10 @@ export function LeaveWorkspaceDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="text-destructive bg-destructive/10 hover:bg-destructive/20">
+        <Button
+          className="text-destructive bg-destructive/10 hover:bg-destructive/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={disabled}
+        >
           <UserMinus className="size-4" />
           Leave Workspace
         </Button>

@@ -5,7 +5,7 @@ import { AudioWaveform, Command, GalleryVerticalEnd } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
-import { TeamSwitcher } from "./team-switcher";
+import { WorkspaceSwitcher } from "./workspace-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -17,32 +17,11 @@ import { NavSecondary } from "./nav-secondary";
 import { NavProject } from "./nav-project";
 import { NavWorkspace } from "./nav-workspace";
 
-// This is sample data.
-const data = {
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-};
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <WorkspaceSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain />

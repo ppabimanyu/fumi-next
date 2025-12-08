@@ -209,6 +209,11 @@ export type UserWhereInput = {
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   twofactors?: Prisma.TwoFactorListRelationFilter
+  subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
+  workspaceMembers?: Prisma.WorkspaceMemberListRelationFilter
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationListRelationFilter
+  issues?: Prisma.IssueListRelationFilter
+  assignees?: Prisma.IssueListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -223,6 +228,11 @@ export type UserOrderByWithRelationInput = {
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   twofactors?: Prisma.TwoFactorOrderByRelationAggregateInput
+  subscription?: Prisma.SubscriptionOrderByWithRelationInput
+  workspaceMembers?: Prisma.WorkspaceMemberOrderByRelationAggregateInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationOrderByRelationAggregateInput
+  issues?: Prisma.IssueOrderByRelationAggregateInput
+  assignees?: Prisma.IssueOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +250,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   twofactors?: Prisma.TwoFactorListRelationFilter
+  subscription?: Prisma.XOR<Prisma.SubscriptionNullableScalarRelationFilter, Prisma.SubscriptionWhereInput> | null
+  workspaceMembers?: Prisma.WorkspaceMemberListRelationFilter
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationListRelationFilter
+  issues?: Prisma.IssueListRelationFilter
+  assignees?: Prisma.IssueListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -282,6 +297,11 @@ export type UserCreateInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -296,6 +316,11 @@ export type UserUncheckedCreateInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserUpdateInput = {
@@ -310,6 +335,11 @@ export type UserUpdateInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -324,6 +354,11 @@ export type UserUncheckedUpdateInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -397,6 +432,16 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -459,6 +504,100 @@ export type UserUpdateOneRequiredWithoutTwofactorsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTwofactorsInput, Prisma.UserUpdateWithoutTwofactorsInput>, Prisma.UserUncheckedUpdateWithoutTwofactorsInput>
 }
 
+export type UserCreateNestedOneWithoutSubscriptionInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSubscriptionNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSubscriptionInput
+  upsert?: Prisma.UserUpsertWithoutSubscriptionInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSubscriptionInput, Prisma.UserUpdateWithoutSubscriptionInput>, Prisma.UserUncheckedUpdateWithoutSubscriptionInput>
+}
+
+export type UserCreateNestedOneWithoutWorkspaceMembersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWorkspaceMembersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMembersInput
+  upsert?: Prisma.UserUpsertWithoutWorkspaceMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkspaceMembersInput, Prisma.UserUpdateWithoutWorkspaceMembersInput>, Prisma.UserUncheckedUpdateWithoutWorkspaceMembersInput>
+}
+
+export type UserCreateNestedOneWithoutWorkspaceMemberInvitationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMemberInvitationsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMemberInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMemberInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWorkspaceMemberInvitationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMemberInvitationsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMemberInvitationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkspaceMemberInvitationsInput
+  upsert?: Prisma.UserUpsertWithoutWorkspaceMemberInvitationsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkspaceMemberInvitationsInput, Prisma.UserUpdateWithoutWorkspaceMemberInvitationsInput>, Prisma.UserUncheckedUpdateWithoutWorkspaceMemberInvitationsInput>
+}
+
+export type UserCreateNestedOneWithoutIssuesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutIssuesInput, Prisma.UserUncheckedCreateWithoutIssuesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIssuesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedManyWithoutAssigneesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssigneesInput, Prisma.UserUncheckedCreateWithoutAssigneesInput> | Prisma.UserCreateWithoutAssigneesInput[] | Prisma.UserUncheckedCreateWithoutAssigneesInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssigneesInput | Prisma.UserCreateOrConnectWithoutAssigneesInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutAssigneesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssigneesInput, Prisma.UserUncheckedCreateWithoutAssigneesInput> | Prisma.UserCreateWithoutAssigneesInput[] | Prisma.UserUncheckedCreateWithoutAssigneesInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssigneesInput | Prisma.UserCreateOrConnectWithoutAssigneesInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateOneRequiredWithoutIssuesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutIssuesInput, Prisma.UserUncheckedCreateWithoutIssuesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIssuesInput
+  upsert?: Prisma.UserUpsertWithoutIssuesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutIssuesInput, Prisma.UserUpdateWithoutIssuesInput>, Prisma.UserUncheckedUpdateWithoutIssuesInput>
+}
+
+export type UserUpdateManyWithoutAssigneesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssigneesInput, Prisma.UserUncheckedCreateWithoutAssigneesInput> | Prisma.UserCreateWithoutAssigneesInput[] | Prisma.UserUncheckedCreateWithoutAssigneesInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssigneesInput | Prisma.UserCreateOrConnectWithoutAssigneesInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutAssigneesInput | Prisma.UserUpsertWithWhereUniqueWithoutAssigneesInput[]
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutAssigneesInput | Prisma.UserUpdateWithWhereUniqueWithoutAssigneesInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutAssigneesInput | Prisma.UserUpdateManyWithWhereWithoutAssigneesInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutAssigneesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssigneesInput, Prisma.UserUncheckedCreateWithoutAssigneesInput> | Prisma.UserCreateWithoutAssigneesInput[] | Prisma.UserUncheckedCreateWithoutAssigneesInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssigneesInput | Prisma.UserCreateOrConnectWithoutAssigneesInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutAssigneesInput | Prisma.UserUpsertWithWhereUniqueWithoutAssigneesInput[]
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutAssigneesInput | Prisma.UserUpdateWithWhereUniqueWithoutAssigneesInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutAssigneesInput | Prisma.UserUpdateManyWithWhereWithoutAssigneesInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -470,6 +609,11 @@ export type UserCreateWithoutSessionsInput = {
   twoFactorEnabled?: boolean | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -483,6 +627,11 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   twoFactorEnabled?: boolean | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -512,6 +661,11 @@ export type UserUpdateWithoutSessionsInput = {
   twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -525,6 +679,11 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -538,6 +697,11 @@ export type UserCreateWithoutAccountsInput = {
   twoFactorEnabled?: boolean | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -551,6 +715,11 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   twoFactorEnabled?: boolean | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -580,6 +749,11 @@ export type UserUpdateWithoutAccountsInput = {
   twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -593,6 +767,11 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserCreateWithoutTwofactorsInput = {
@@ -606,6 +785,11 @@ export type UserCreateWithoutTwofactorsInput = {
   twoFactorEnabled?: boolean | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserUncheckedCreateWithoutTwofactorsInput = {
@@ -619,6 +803,11 @@ export type UserUncheckedCreateWithoutTwofactorsInput = {
   twoFactorEnabled?: boolean | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
 }
 
 export type UserCreateOrConnectWithoutTwofactorsInput = {
@@ -648,6 +837,11 @@ export type UserUpdateWithoutTwofactorsInput = {
   twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTwofactorsInput = {
@@ -661,6 +855,481 @@ export type UserUncheckedUpdateWithoutTwofactorsInput = {
   twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserCreateWithoutSubscriptionInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserUncheckedCreateWithoutSubscriptionInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserCreateOrConnectWithoutSubscriptionInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+}
+
+export type UserUpsertWithoutSubscriptionInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionInput, Prisma.UserUncheckedUpdateWithoutSubscriptionInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSubscriptionInput, Prisma.UserUncheckedCreateWithoutSubscriptionInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSubscriptionInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSubscriptionInput, Prisma.UserUncheckedUpdateWithoutSubscriptionInput>
+}
+
+export type UserUpdateWithoutSubscriptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSubscriptionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserCreateWithoutWorkspaceMembersInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserUncheckedCreateWithoutWorkspaceMembersInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserCreateOrConnectWithoutWorkspaceMembersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
+}
+
+export type UserUpsertWithoutWorkspaceMembersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMembersInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMembersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMembersInput, Prisma.UserUncheckedCreateWithoutWorkspaceMembersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWorkspaceMembersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMembersInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMembersInput>
+}
+
+export type UserUpdateWithoutWorkspaceMembersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWorkspaceMembersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserCreateWithoutWorkspaceMemberInvitationsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserUncheckedCreateWithoutWorkspaceMemberInvitationsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserCreateOrConnectWithoutWorkspaceMemberInvitationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMemberInvitationsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMemberInvitationsInput>
+}
+
+export type UserUpsertWithoutWorkspaceMemberInvitationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMemberInvitationsInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMemberInvitationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWorkspaceMemberInvitationsInput, Prisma.UserUncheckedCreateWithoutWorkspaceMemberInvitationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWorkspaceMemberInvitationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWorkspaceMemberInvitationsInput, Prisma.UserUncheckedUpdateWithoutWorkspaceMemberInvitationsInput>
+}
+
+export type UserUpdateWithoutWorkspaceMemberInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWorkspaceMemberInvitationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserCreateWithoutIssuesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  assignees?: Prisma.IssueCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserUncheckedCreateWithoutIssuesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  assignees?: Prisma.IssueUncheckedCreateNestedManyWithoutAssigneesInput
+}
+
+export type UserCreateOrConnectWithoutIssuesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutIssuesInput, Prisma.UserUncheckedCreateWithoutIssuesInput>
+}
+
+export type UserCreateWithoutAssigneesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutAssigneesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  twoFactorEnabled?: boolean | null
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  twofactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  subscription?: Prisma.SubscriptionUncheckedCreateNestedOneWithoutUserInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedCreateNestedManyWithoutUserInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedCreateNestedManyWithoutInvitorInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutAssigneesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssigneesInput, Prisma.UserUncheckedCreateWithoutAssigneesInput>
+}
+
+export type UserUpsertWithoutIssuesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutIssuesInput, Prisma.UserUncheckedUpdateWithoutIssuesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutIssuesInput, Prisma.UserUncheckedCreateWithoutIssuesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutIssuesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutIssuesInput, Prisma.UserUncheckedUpdateWithoutIssuesInput>
+}
+
+export type UserUpdateWithoutIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  assignees?: Prisma.IssueUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserUncheckedUpdateWithoutIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  assignees?: Prisma.IssueUncheckedUpdateManyWithoutAssigneesNestedInput
+}
+
+export type UserUpsertWithWhereUniqueWithoutAssigneesInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAssigneesInput, Prisma.UserUncheckedUpdateWithoutAssigneesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssigneesInput, Prisma.UserUncheckedCreateWithoutAssigneesInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutAssigneesInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAssigneesInput, Prisma.UserUncheckedUpdateWithoutAssigneesInput>
+}
+
+export type UserUpdateManyWithWhereWithoutAssigneesInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutAssigneesInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.StringFilter<"User"> | string
+  name?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
+  emailVerified?: Prisma.BoolFilter<"User"> | boolean
+  image?: Prisma.StringNullableFilter<"User"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  twoFactorEnabled?: Prisma.BoolNullableFilter<"User"> | boolean | null
+}
+
+export type UserUpdateWithoutAssigneesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAssigneesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  twofactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  subscription?: Prisma.SubscriptionUncheckedUpdateOneWithoutUserNestedInput
+  workspaceMembers?: Prisma.WorkspaceMemberUncheckedUpdateManyWithoutUserNestedInput
+  workspaceMemberInvitations?: Prisma.WorkspaceMemberInvitationUncheckedUpdateManyWithoutInvitorNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutAssigneesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  twoFactorEnabled?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
 }
 
 
@@ -672,12 +1341,20 @@ export type UserCountOutputType = {
   sessions: number
   accounts: number
   twofactors: number
+  workspaceMembers: number
+  workspaceMemberInvitations: number
+  issues: number
+  assignees: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   twofactors?: boolean | UserCountOutputTypeCountTwofactorsArgs
+  workspaceMembers?: boolean | UserCountOutputTypeCountWorkspaceMembersArgs
+  workspaceMemberInvitations?: boolean | UserCountOutputTypeCountWorkspaceMemberInvitationsArgs
+  issues?: boolean | UserCountOutputTypeCountIssuesArgs
+  assignees?: boolean | UserCountOutputTypeCountAssigneesArgs
 }
 
 /**
@@ -711,6 +1388,34 @@ export type UserCountOutputTypeCountTwofactorsArgs<ExtArgs extends runtime.Types
   where?: Prisma.TwoFactorWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWorkspaceMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceMemberWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWorkspaceMemberInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkspaceMemberInvitationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountIssuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IssueWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAssigneesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IssueWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -724,6 +1429,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   twofactors?: boolean | Prisma.User$twofactorsArgs<ExtArgs>
+  subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
+  workspaceMembers?: boolean | Prisma.User$workspaceMembersArgs<ExtArgs>
+  workspaceMemberInvitations?: boolean | Prisma.User$workspaceMemberInvitationsArgs<ExtArgs>
+  issues?: boolean | Prisma.User$issuesArgs<ExtArgs>
+  assignees?: boolean | Prisma.User$assigneesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -765,6 +1475,11 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   twofactors?: boolean | Prisma.User$twofactorsArgs<ExtArgs>
+  subscription?: boolean | Prisma.User$subscriptionArgs<ExtArgs>
+  workspaceMembers?: boolean | Prisma.User$workspaceMembersArgs<ExtArgs>
+  workspaceMemberInvitations?: boolean | Prisma.User$workspaceMemberInvitationsArgs<ExtArgs>
+  issues?: boolean | Prisma.User$issuesArgs<ExtArgs>
+  assignees?: boolean | Prisma.User$assigneesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -776,6 +1491,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     twofactors: Prisma.$TwoFactorPayload<ExtArgs>[]
+    subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
+    workspaceMembers: Prisma.$WorkspaceMemberPayload<ExtArgs>[]
+    workspaceMemberInvitations: Prisma.$WorkspaceMemberInvitationPayload<ExtArgs>[]
+    issues: Prisma.$IssuePayload<ExtArgs>[]
+    assignees: Prisma.$IssuePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1183,6 +1903,11 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   twofactors<T extends Prisma.User$twofactorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$twofactorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TwoFactorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  subscription<T extends Prisma.User$subscriptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$subscriptionArgs<ExtArgs>>): Prisma.Prisma__SubscriptionClient<runtime.Types.Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  workspaceMembers<T extends Prisma.User$workspaceMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspaceMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceMemberInvitations<T extends Prisma.User$workspaceMemberInvitationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workspaceMemberInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkspaceMemberInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  issues<T extends Prisma.User$issuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$issuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assignees<T extends Prisma.User$assigneesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assigneesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1677,6 +2402,121 @@ export type User$twofactorsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.TwoFactorScalarFieldEnum | Prisma.TwoFactorScalarFieldEnum[]
+}
+
+/**
+ * User.subscription
+ */
+export type User$subscriptionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Subscription
+   */
+  select?: Prisma.SubscriptionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Subscription
+   */
+  omit?: Prisma.SubscriptionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SubscriptionInclude<ExtArgs> | null
+  where?: Prisma.SubscriptionWhereInput
+}
+
+/**
+ * User.workspaceMembers
+ */
+export type User$workspaceMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceMember
+   */
+  select?: Prisma.WorkspaceMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceMember
+   */
+  omit?: Prisma.WorkspaceMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceMemberInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceMemberWhereInput
+  orderBy?: Prisma.WorkspaceMemberOrderByWithRelationInput | Prisma.WorkspaceMemberOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceMemberScalarFieldEnum | Prisma.WorkspaceMemberScalarFieldEnum[]
+}
+
+/**
+ * User.workspaceMemberInvitations
+ */
+export type User$workspaceMemberInvitationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkspaceMemberInvitation
+   */
+  select?: Prisma.WorkspaceMemberInvitationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkspaceMemberInvitation
+   */
+  omit?: Prisma.WorkspaceMemberInvitationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkspaceMemberInvitationInclude<ExtArgs> | null
+  where?: Prisma.WorkspaceMemberInvitationWhereInput
+  orderBy?: Prisma.WorkspaceMemberInvitationOrderByWithRelationInput | Prisma.WorkspaceMemberInvitationOrderByWithRelationInput[]
+  cursor?: Prisma.WorkspaceMemberInvitationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkspaceMemberInvitationScalarFieldEnum | Prisma.WorkspaceMemberInvitationScalarFieldEnum[]
+}
+
+/**
+ * User.issues
+ */
+export type User$issuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Issue
+   */
+  select?: Prisma.IssueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Issue
+   */
+  omit?: Prisma.IssueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IssueInclude<ExtArgs> | null
+  where?: Prisma.IssueWhereInput
+  orderBy?: Prisma.IssueOrderByWithRelationInput | Prisma.IssueOrderByWithRelationInput[]
+  cursor?: Prisma.IssueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IssueScalarFieldEnum | Prisma.IssueScalarFieldEnum[]
+}
+
+/**
+ * User.assignees
+ */
+export type User$assigneesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Issue
+   */
+  select?: Prisma.IssueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Issue
+   */
+  omit?: Prisma.IssueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IssueInclude<ExtArgs> | null
+  where?: Prisma.IssueWhereInput
+  orderBy?: Prisma.IssueOrderByWithRelationInput | Prisma.IssueOrderByWithRelationInput[]
+  cursor?: Prisma.IssueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IssueScalarFieldEnum | Prisma.IssueScalarFieldEnum[]
 }
 
 /**

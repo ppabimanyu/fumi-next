@@ -9,7 +9,26 @@
 * 🟢 You can import this file directly.
 */
 
+export const WorkspaceType = {
+  PERSONAL: 'PERSONAL',
+  ORGANIZATION: 'ORGANIZATION'
+} as const
+
+export type WorkspaceType = (typeof WorkspaceType)[keyof typeof WorkspaceType]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const WorkspaceMemberRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+} as const
+
+export type WorkspaceMemberRole = (typeof WorkspaceMemberRole)[keyof typeof WorkspaceMemberRole]
+
+
+export const WorkspaceMemberStatus = {
+  ACTIVE: 'ACTIVE',
+  PENDING: 'PENDING'
+} as const
+
+export type WorkspaceMemberStatus = (typeof WorkspaceMemberStatus)[keyof typeof WorkspaceMemberStatus]

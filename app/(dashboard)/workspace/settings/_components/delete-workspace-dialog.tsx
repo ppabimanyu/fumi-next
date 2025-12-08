@@ -15,33 +15,40 @@ import { Input } from "@/components/ui/input";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import LoadingButton from "@/components/loading-button";
+import { trpc } from "@/lib/trpc/client";
+import { useRouter } from "next/navigation";
+import { env } from "@/env";
 
-export function DeleteWorkspaceDialog() {
+export function DeleteWorkspaceDialog({
+  workspaceName,
+  disabled = false,
+}: {
+  workspaceName: string;
+  disabled?: boolean;
+}) {
+  const router = useRouter();
+  const trpcUtils = trpc.useUtils();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
-  // In real implementation, this would come from context/props
-  const workspaceName = "my-workspace";
+  const deleteWorkspaceMutation = trpc.workspace.deleteWorkspace.useMutation({
+    onSuccess: () => {
+      toast.success("Workspace deleted successfully");
+      trpcUtils.workspace.listWorkspace.invalidate();
+      trpcUtils.workspace.getActiveWorkspace.invalidate();
+      router.replace(env.NEXT_PUBLIC_DEFAULT_AUTHENTICATED_PAGE);
+    },
+    onError: () => {
+      toast.error("Failed to delete workspace");
+    },
+    onSettled: () => {
+      handleClose();
+    },
+  });
 
   const handleDelete = async () => {
-    if (confirmText !== workspaceName) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // TODO: Implement actual delete logic via tRPC
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      toast.success("Workspace deleted successfully");
-      handleClose();
-      // In real implementation, redirect to workspace selection or home
-    } catch {
-      toast.error("Failed to delete workspace. Please try again.");
-    } finally {
-      setIsLoading(false);
+    if (confirmText === workspaceName) {
+      await deleteWorkspaceMutation.mutateAsync();
     }
   };
 
@@ -62,7 +69,10 @@ export function DeleteWorkspaceDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="text-destructive bg-destructive/10 hover:bg-destructive/20">
+        <Button
+          className="text-destructive bg-destructive/10 hover:bg-destructive/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={disabled}
+        >
           <Trash2 className="size-4" />
           Delete Workspace
         </Button>
@@ -83,9 +93,7 @@ export function DeleteWorkspaceDialog() {
         <div className="space-y-2">
           <p className="text-sm text-muted-foreground">
             To confirm, type{" "}
-            <span className="font-mono font-medium text-foreground">
-              {workspaceName}
-            </span>{" "}
+            <span className="font-medium text-foreground">{workspaceName}</span>{" "}
             below:
           </p>
           <Input
@@ -102,7 +110,7 @@ export function DeleteWorkspaceDialog() {
             variant="destructive"
             disabled={confirmText !== workspaceName}
             onClick={handleDelete}
-            isLoading={isLoading}
+            isLoading={deleteWorkspaceMutation.isPending}
           >
             Delete Workspace
           </LoadingButton>

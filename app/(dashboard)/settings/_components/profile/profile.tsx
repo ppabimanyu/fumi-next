@@ -24,7 +24,6 @@ import {
   LockKeyhole,
   TriangleAlert,
   Camera,
-  X,
   Loader2,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -130,7 +129,6 @@ export function SettingsProfilePage() {
   const uploadAvatarMutation = trpc.user.uploadAvatar.useMutation({
     onSuccess: (data) => {
       toast.success(data.message);
-      setPreviewImage(null);
       refetch();
     },
     onError: (error) => {
@@ -280,49 +278,6 @@ export function SettingsProfilePage() {
                     )}
                   </div>
                 </button>
-
-                {/* Action buttons */}
-                {/* <div className="flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadAvatarMutation.isPending}
-                  >
-                    {uploadAvatarMutation.isPending ? (
-                      <>
-                        <Loader2 className="size-4 animate-spin" />
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <Camera className="size-4" />
-                        Change Photo
-                      </>
-                    )}
-                  </Button>
-                  {data?.user.image && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleRemoveAvatar}
-                      disabled={deleteAvatarMutation.isPending}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      {deleteAvatarMutation.isPending ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin" />
-                          Removing...
-                        </>
-                      ) : (
-                        <>
-                          <X className="size-4" />
-                          Remove
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </div> */}
               </div>
             </SectionItemContent>
           </SectionItem>
