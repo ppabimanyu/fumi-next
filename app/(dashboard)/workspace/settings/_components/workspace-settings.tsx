@@ -109,6 +109,12 @@ export function WorkspaceSettings() {
       }),
     },
     onSubmit: async ({ value }) => {
+      if (
+        value.name.trim() == activeWorkspaceQuery.data?.name &&
+        value.description.trim() == activeWorkspaceQuery.data?.description
+      ) {
+        return;
+      }
       updateWorkspaceMutation.mutate({
         name: value.name?.trim(),
         description: value.description?.trim(),
