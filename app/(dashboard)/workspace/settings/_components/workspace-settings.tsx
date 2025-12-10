@@ -24,11 +24,17 @@ import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import LoadingContent from "@/components/loading-content";
 
 export function WorkspaceSettings() {
   const activeWorkspaceQuery = trpc.workspace.getActiveWorkspace.useQuery();
   if (activeWorkspaceQuery.isError) {
     toast.error("Failed to load active workspace");
+  }
+
+  const currentUserRoleQuery = trpc.workspace.currentUserRole.useQuery();
+  if (currentUserRoleQuery.isError) {
+    toast.error("Failed to get current user role");
   }
 
   // Image upload
@@ -121,6 +127,10 @@ export function WorkspaceSettings() {
       });
     },
   });
+
+  if (activeWorkspaceQuery.isPending || currentUserRoleQuery.isPending) {
+    return <LoadingContent />;
+  }
 
   return (
     <div className="space-y-8">
@@ -271,24 +281,26 @@ export function WorkspaceSettings() {
             </SectionItemContent>
           </SectionItem>
           <Separator />
-          <SectionItem>
-            <SectionItemHeader>
-              <SectionItemTitle>Delete Workspace</SectionItemTitle>
-              <SectionItemDescription>
-                Permanently delete this workspace and all of its data, including
-                projects, issues, and team members. This action cannot be
-                undone.
-              </SectionItemDescription>
-            </SectionItemHeader>
-            <SectionItemContent>
-              <DeleteWorkspaceDialog
-                workspaceName={activeWorkspaceQuery.data?.name ?? ""}
-                disabled={
-                  activeWorkspaceQuery.data?.workspaceType === "PERSONAL"
-                }
-              />
-            </SectionItemContent>
-          </SectionItem>
+          {currentUserRoleQuery.data?.role === "OWNER" && (
+            <SectionItem>
+              <SectionItemHeader>
+                <SectionItemTitle>Delete Workspace</SectionItemTitle>
+                <SectionItemDescription>
+                  Permanently delete this workspace and all of its data,
+                  including projects, issues, and team members. This action
+                  cannot be undone.
+                </SectionItemDescription>
+              </SectionItemHeader>
+              <SectionItemContent>
+                <DeleteWorkspaceDialog
+                  workspaceName={activeWorkspaceQuery.data?.name ?? ""}
+                  disabled={
+                    activeWorkspaceQuery.data?.workspaceType === "PERSONAL"
+                  }
+                />
+              </SectionItemContent>
+            </SectionItem>
+          )}
         </SectionContent>
       </Section>
     </div>

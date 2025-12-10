@@ -182,6 +182,19 @@ export const workspaceRouter = createTRPCRouter({
     const workspace = await ctx.db.workspace.findFirst({
       where: {
         id: workspaceId,
+        workspaceMembers: {
+          some: {
+            userId: ctx.session!.user.id,
+          },
+        },
+      },
+      include: {
+        workspaceMembers: {
+          select: {
+            userId: true,
+            role: true,
+          },
+        },
       },
     });
 
@@ -192,10 +205,14 @@ export const workspaceRouter = createTRPCRouter({
       });
     }
 
-    if (workspace.workspaceType === WorkspaceType.PERSONAL) {
+    if (
+      workspace.workspaceMembers.find(
+        (member) => member.userId === ctx.session!.user.id
+      )?.role !== WorkspaceMemberRole.OWNER
+    ) {
       throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Personal workspace cannot be deleted",
+        code: "FORBIDDEN",
+        message: "You do not have permission to delete this workspace",
       });
     }
 
@@ -281,4 +298,18 @@ export const workspaceRouter = createTRPCRouter({
         message: "Image uploaded successfully",
       };
     }),
+
+  currentUserRole: protectedProcedure.query(async ({ ctx }) => {
+    const workspaceId = ctx.session!.session.activeWorkspaceId;
+    const userId = ctx.session!.user.id;
+    return ctx.db.workspaceMember.findFirst({
+      where: {
+        workspaceId,
+        userId,
+      },
+      select: {
+        role: true,
+      },
+    });
+  }),
 });
