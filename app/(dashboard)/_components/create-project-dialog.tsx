@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,6 +9,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Field,
@@ -18,56 +20,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import LoadingButton from "@/components/loading-button";
-import { Building2 } from "lucide-react";
+import { FolderPlus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
 import { trpc } from "@/lib/trpc/client";
 import { useRouter } from "next/navigation";
-import { env } from "@/env";
+import { createProjectSchema } from "@/lib/schemas/project";
 
-const createWorkspaceSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Workspace name is required")
-    .min(2, "Workspace name must be at least 2 characters")
-    .max(50, "Workspace name must be at most 50 characters"),
-  description: z
-    .string()
-    .max(500, "Description must be at most 500 characters"),
-});
-
-interface CreateWorkspaceDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function CreateWorkspaceDialog({
-  open,
-  onOpenChange,
-}: CreateWorkspaceDialogProps) {
+export function CreateProjectDialog() {
+  const [open, setOpen] = useState(false);
   const router = useRouter();
   const trpcUtils = trpc.useUtils();
 
-  const changeActiveWorkspaceMutation =
-    trpc.workspace.changeActiveWorkspace.useMutation({
-      onSuccess: () => {
-        trpcUtils.workspace.getActiveWorkspace.invalidate();
-        toast.success("Workspace changed successfully");
-      },
-      onError: () => {
-        toast.error("Failed to change active workspace. Please try again.");
-      },
-      onSettled: () => {
-        router.replace(env.NEXT_PUBLIC_DEFAULT_AUTHENTICATED_PAGE);
-        onOpenChange(false);
-      },
-    });
-
-  const createWorkspaceMutation = trpc.workspace.createWorkspace.useMutation({
-    onSuccess: () => {
-      trpcUtils.workspace.listWorkspace.invalidate();
-      toast.success("Workspace created successfully");
+  const createProjectMutation = trpc.project.createProject.useMutation({
+    onSuccess: ({ projectId }) => {
+      trpcUtils.project.listProjects.invalidate();
+      toast.success("Project created successfully");
+      router.push(`/projects/${projectId}`);
     },
     onError: (error) => {
       // Handle Zod validation errors from server
@@ -78,32 +47,34 @@ export function CreateWorkspaceDialog({
           typeof firstError === "string" ? firstError : "Validation failed"
         );
       } else {
-        toast.error("Failed to create workspace. Please try again.");
+        toast.error("Failed to create project. Please try again.");
       }
+    },
+    onSettled: () => {
+      setOpen(false);
     },
   });
 
   const form = useForm({
     defaultValues: {
       name: "",
+      code: "",
       description: "",
     },
     validators: {
-      onChange: createWorkspaceSchema,
+      onChange: createProjectSchema,
     },
     onSubmit: async ({ value }) => {
-      const { workspaceId } = await createWorkspaceMutation.mutateAsync({
+      await createProjectMutation.mutateAsync({
         name: value.name.trim(),
-        description: value.description?.trim(),
-      });
-      await changeActiveWorkspaceMutation.mutateAsync({
-        workspaceId,
+        code: value.code.trim(),
+        description: value.description.trim(),
       });
     },
   });
 
   const handleClose = () => {
-    onOpenChange(false);
+    setOpen(false);
     form.reset();
   };
 
@@ -114,21 +85,29 @@ export function CreateWorkspaceDialog({
         if (!isOpen) {
           handleClose();
         } else {
-          onOpenChange(true);
+          setOpen(true);
         }
       }}
     >
+      <DialogTrigger asChild>
+        <button
+          className="hover:bg-accent rounded-sm p-0.5 transition-colors"
+          aria-label="Create project"
+        >
+          <Plus className="size-4" />
+        </button>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <div className="size-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Building2 className="size-5 text-primary" />
+              <FolderPlus className="size-5 text-primary" />
             </div>
-            Create Workspace
+            Create Project
           </DialogTitle>
           <DialogDescription>
-            Create a new workspace to organize your projects and collaborate
-            with your team.
+            Create a new project to organize your issues and collaborate with
+            your team.
           </DialogDescription>
         </DialogHeader>
 
@@ -136,15 +115,42 @@ export function CreateWorkspaceDialog({
           <form.Field name="name">
             {(field) => (
               <Field>
-                <FieldLabel htmlFor="workspace-name">Workspace Name</FieldLabel>
+                <FieldLabel htmlFor="project-name">Project Name</FieldLabel>
                 <Input
-                  id="workspace-name"
-                  placeholder="My Workspace"
+                  id="project-name"
+                  placeholder="My Project"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                 />
                 <FieldDescription>
-                  This will be the display name of your workspace.
+                  This will be the display name of your project.
+                </FieldDescription>
+                <FieldError>{field.state.meta.errors[0]?.message}</FieldError>
+              </Field>
+            )}
+          </form.Field>
+
+          <form.Field name="code">
+            {(field) => (
+              <Field>
+                <FieldLabel htmlFor="project-code">
+                  Project Code{" "}
+                  <span className="text-muted-foreground font-normal">
+                    (optional)
+                  </span>
+                </FieldLabel>
+                <Input
+                  id="project-code"
+                  placeholder="PROJ"
+                  value={field.state.value}
+                  onChange={(e) =>
+                    field.handleChange(e.target.value.toUpperCase())
+                  }
+                  maxLength={10}
+                />
+                <FieldDescription>
+                  A short code used for issue identifiers (e.g., PROJ-123). Will
+                  be auto-generated if left empty.
                 </FieldDescription>
                 <FieldError>{field.state.meta.errors[0]?.message}</FieldError>
               </Field>
@@ -154,21 +160,21 @@ export function CreateWorkspaceDialog({
           <form.Field name="description">
             {(field) => (
               <Field>
-                <FieldLabel htmlFor="workspace-description">
+                <FieldLabel htmlFor="project-description">
                   Description{" "}
                   <span className="text-muted-foreground font-normal">
                     (optional)
                   </span>
                 </FieldLabel>
                 <Textarea
-                  id="workspace-description"
-                  placeholder="A brief description of what this workspace is for..."
+                  id="project-description"
+                  placeholder="A brief description of what this project is for..."
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   rows={3}
                 />
                 <FieldDescription>
-                  Help your team understand the purpose of this workspace.
+                  Help your team understand the purpose of this project.
                 </FieldDescription>
                 <FieldError>{field.state.meta.errors[0]?.message}</FieldError>
               </Field>
@@ -189,8 +195,8 @@ export function CreateWorkspaceDialog({
                 disabled={!canSubmit}
                 isLoading={isSubmitting}
               >
-                <Building2 className="size-4 mr-2" />
-                Create Workspace
+                <FolderPlus className="size-4 mr-2" />
+                Create Project
               </LoadingButton>
             )}
           </form.Subscribe>

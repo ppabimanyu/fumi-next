@@ -14,20 +14,7 @@ import { usePathname } from "next/navigation";
 import { trpc } from "@/lib/trpc/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const navProjectItems: {
-  title: string;
-  url: string;
-}[] = [
-  {
-    title: "NextJS StarterKit",
-    url: "/projects/nextjs-starterkit",
-  },
-  {
-    title: "Fumi",
-    url: "/projects/fumi",
-  },
-];
+import { CreateProjectDialog } from "./create-project-dialog";
 
 export function NavProject() {
   const pathname = usePathname();
@@ -39,7 +26,10 @@ export function NavProject() {
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Project</SidebarGroupLabel>
+      <SidebarGroupLabel className="flex items-center justify-between gap-2">
+        <span>Project</span>
+        <CreateProjectDialog />
+      </SidebarGroupLabel>
       <SidebarMenu>
         {listProjectsQuery.isPending ? (
           <div className="flex items-center gap-2 w-full p-2">

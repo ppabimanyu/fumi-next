@@ -34,12 +34,12 @@ import {
 import SeparatorFull from "@/components/separator-full";
 import { cn } from "@/lib/utils";
 import moment from "moment";
-import { statusIcon } from "@/components/status-icon";
+import { IssueStatusItem } from "@/components/issue-status-item";
 import { IssueTableRow } from "./issue-table-row";
 import { Button } from "@/components/ui/button";
 import { StatusIconEnum } from "@/lib/enum/status-icon";
 import { PriorityEnum } from "@/lib/enum/priority";
-import { priorityItem } from "@/components/priority-item";
+import { PriorityItem } from "@/components/priority-item";
 
 // Filter options
 const statusFilterOptions = [
@@ -236,8 +236,10 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="capitalize text-xs font-medium max-w-xs overflow-hidden text-ellipsis flex items-center gap-1">
-        {statusIcon(row.original.status.icon as StatusIconEnum)}
-        {row.original.status.name}
+        <IssueStatusItem
+          value={row.original.status.icon as StatusIconEnum}
+          name={row.original.status.name}
+        />
       </div>
     ),
   },
@@ -254,7 +256,7 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="max-w-xs overflow-hidden text-ellipsis">
-        {priorityItem(row.original.priority as PriorityEnum)?.icon}
+        <PriorityItem value={row.original.priority as PriorityEnum} />
       </div>
     ),
   },
@@ -427,8 +429,10 @@ export function TableIssues() {
                   }}
                 >
                   <span className="flex items-center gap-2">
-                    {statusIcon(option.icon as StatusIconEnum)}
-                    {option.label}
+                    <IssueStatusItem
+                      value={option.icon as StatusIconEnum}
+                      name={option.label}
+                    />
                   </span>
                 </DropdownMenuCheckboxItem>
               ))}
@@ -484,8 +488,7 @@ export function TableIssues() {
                     );
                   }}
                 >
-                  {priorityItem(option.value as PriorityEnum)?.icon ||
-                    option.label}
+                  <PriorityItem value={option.value as PriorityEnum} />
                 </DropdownMenuCheckboxItem>
               ))}
               {priorityFilter.length > 0 && (

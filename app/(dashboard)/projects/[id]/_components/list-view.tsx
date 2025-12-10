@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { statusIcon } from "@/components/status-icon";
 import { ChevronDown, ChevronRight, Timer, TimerOff } from "lucide-react";
 import moment from "moment";
 import {
@@ -11,8 +10,9 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { StatusIconEnum } from "@/lib/enum/status-icon";
-import { priorityItem } from "@/components/priority-item";
 import { PriorityEnum } from "@/lib/enum/priority";
+import { PriorityItem } from "@/components/priority-item";
+import { IssueStatusItem } from "@/components/issue-status-item";
 
 export type Issue = {
   id: string;
@@ -149,7 +149,7 @@ function IssueRow({ issue }: { issue: Issue }) {
   return (
     <div className="flex items-center gap-2 px-2 py-2 hover:bg-muted/50 rounded-md cursor-pointer">
       {/* Priority */}
-      <div>{priorityItem(issue.priority as PriorityEnum)?.icon}</div>
+      <PriorityItem value={issue.priority as PriorityEnum} />
 
       {/* Issue Code */}
       <span className="text-xs p-1 bg-primary/20 text-primary rounded-md">
@@ -157,7 +157,7 @@ function IssueRow({ issue }: { issue: Issue }) {
       </span>
 
       {/* Status Icon */}
-      <div>{statusIcon(issue.status.icon as StatusIconEnum)}</div>
+      <IssueStatusItem value={issue.status.icon as StatusIconEnum} />
 
       {/* Title */}
       <span className="text-sm font-medium flex-1 truncate">{issue.title}</span>
@@ -203,8 +203,10 @@ function StatusGroup({
               <ChevronRight className="size-4" />
             )}
           </div>
-          {statusIcon(status.icon as StatusIconEnum)}
-          <span className="text-sm font-medium">{status.name}</span>
+          <IssueStatusItem
+            value={status.icon as StatusIconEnum}
+            name={status.name}
+          />
           <span className="text-xs text-muted-foreground ml-1">
             {issues.length}
           </span>

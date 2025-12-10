@@ -7,8 +7,6 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { priorityItem, listPriorityItems } from "@/components/priority-item";
-import { statusIcon } from "@/components/status-icon";
 import {
   Box,
   CalendarDays,
@@ -41,6 +39,8 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { StatusIconEnum } from "@/lib/enum/status-icon";
 import { PriorityEnum } from "@/lib/enum/priority";
+import { PriorityItem } from "@/components/priority-item";
+import { IssueStatusItem } from "@/components/issue-status-item";
 
 export type Issue = {
   id: string;
@@ -383,10 +383,10 @@ export function IssueDetailDialog({
                   return (
                     <span className="flex items-center gap-2">
                       {status ? (
-                        <>
-                          {statusIcon(status.icon as StatusIconEnum)}
-                          <span className="text-xs">{status.name}</span>
-                        </>
+                        <IssueStatusItem
+                          value={status.icon as StatusIconEnum}
+                          name={status.name}
+                        />
                       ) : (
                         <span className="text-xs">Select status...</span>
                       )}
@@ -419,13 +419,16 @@ export function IssueDetailDialog({
                               <CommandItem
                                 key={status.id}
                                 value={status.id}
+                                keywords={[status.name]}
                                 onSelect={(currentValue) => {
                                   field.handleChange(currentValue);
                                   setOpenComboboxStatus(false);
                                 }}
                               >
-                                {statusIcon(status.icon as StatusIconEnum)}
-                                {status.name}
+                                <IssueStatusItem
+                                  value={status.icon as StatusIconEnum}
+                                  name={status.name}
+                                />
                                 <Check
                                   className={cn(
                                     "ml-auto",
@@ -462,9 +465,11 @@ export function IssueDetailDialog({
                       className="w-fit justify-between px-2"
                       size={"sm"}
                     >
-                      {field.state.value
-                        ? priorityItem(field.state.value as PriorityEnum)?.icon
-                        : ""}
+                      {field.state.value && (
+                        <PriorityItem
+                          value={field.state.value as PriorityEnum}
+                        />
+                      )}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="p-0 w-fit">
@@ -473,20 +478,20 @@ export function IssueDetailDialog({
                       <CommandList>
                         <CommandEmpty>No priority found.</CommandEmpty>
                         <CommandGroup>
-                          {listPriorityItems.map((p) => (
+                          {Object.values(PriorityEnum).map((priority) => (
                             <CommandItem
-                              key={p.value}
-                              value={p.value}
+                              key={priority}
+                              value={priority}
                               onSelect={(currentValue) => {
                                 field.handleChange(currentValue);
                                 setOpenComboboxPriority(false);
                               }}
                             >
-                              {p.icon}
+                              <PriorityItem value={priority} />
                               <Check
                                 className={cn(
                                   "ml-auto",
-                                  field.state.value === p.value
+                                  field.state.value === priority
                                     ? "opacity-100"
                                     : "opacity-0"
                                 )}
