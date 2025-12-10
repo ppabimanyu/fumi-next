@@ -39,7 +39,7 @@ export function NavProject() {
         ) : (
           listProjectsQuery.data?.map((item) => {
             return (
-              <SidebarMenuItem key={item.name}>
+              <SidebarMenuItem key={item.id}>
                 <Link href={`/projects/${item.id}`}>
                   <SidebarMenuButton
                     tooltip={item.name}
