@@ -264,7 +264,7 @@ export function WorkspaceSettings() {
               </p>
             </div>
           )}
-          <SectionItem>
+          {/* <SectionItem>
             <SectionItemHeader>
               <SectionItemTitle>Leave Workspace</SectionItemTitle>
               <SectionItemDescription>
@@ -280,27 +280,26 @@ export function WorkspaceSettings() {
               />
             </SectionItemContent>
           </SectionItem>
-          <Separator />
-          {currentUserRoleQuery.data?.role === "OWNER" && (
-            <SectionItem>
-              <SectionItemHeader>
-                <SectionItemTitle>Delete Workspace</SectionItemTitle>
-                <SectionItemDescription>
-                  Permanently delete this workspace and all of its data,
-                  including projects, issues, and team members. This action
-                  cannot be undone.
-                </SectionItemDescription>
-              </SectionItemHeader>
-              <SectionItemContent>
-                <DeleteWorkspaceDialog
-                  workspaceName={activeWorkspaceQuery.data?.name ?? ""}
-                  disabled={
-                    activeWorkspaceQuery.data?.workspaceType === "PERSONAL"
-                  }
-                />
-              </SectionItemContent>
-            </SectionItem>
-          )}
+          <Separator /> */}
+          <SectionItem>
+            <SectionItemHeader>
+              <SectionItemTitle>Delete Workspace</SectionItemTitle>
+              <SectionItemDescription>
+                Permanently delete this workspace and all of its data, including
+                projects, issues, and team members. This action cannot be
+                undone.
+              </SectionItemDescription>
+            </SectionItemHeader>
+            <SectionItemContent>
+              <DeleteWorkspaceDialog
+                workspaceName={activeWorkspaceQuery.data?.name ?? ""}
+                disabled={
+                  activeWorkspaceQuery.data?.workspaceType === "PERSONAL" ||
+                  currentUserRoleQuery.data?.role !== "OWNER"
+                }
+              />
+            </SectionItemContent>
+          </SectionItem>
         </SectionContent>
       </Section>
     </div>
