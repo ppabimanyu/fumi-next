@@ -16,26 +16,31 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Building2, Camera, Loader2, TriangleAlert } from "lucide-react";
-import { LeaveWorkspaceDialog } from "./leave-workspace-dialog";
 import { DeleteWorkspaceDialog } from "./delete-workspace-dialog";
 import { trpc } from "@/lib/trpc/client";
 import { toast } from "sonner";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LoadingContent from "@/components/loading-content";
 
-export function WorkspaceSettings() {
-  const activeWorkspaceQuery = trpc.workspace.getActiveWorkspace.useQuery();
-  if (activeWorkspaceQuery.isError) {
-    toast.error("Failed to load active workspace");
-  }
+import React from "react";
 
-  const currentUserRoleQuery = trpc.workspace.currentUserRole.useQuery();
-  if (currentUserRoleQuery.isError) {
-    toast.error("Failed to get current user role");
-  }
+export default function WorkspaceSettingsPage() {
+  return (
+    <Suspense fallback={<LoadingContent />}>
+      <WorkspaceSettings />
+    </Suspense>
+  );
+}
+
+export function WorkspaceSettings() {
+  const trpcUtils = trpc.useUtils();
+  const [activeWorkspace] =
+    trpc.workspace.getActiveWorkspace.useSuspenseQuery();
+
+  const [currentUserRole] = trpc.workspace.currentUserRole.useSuspenseQuery();
 
   // Image upload
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,7 +49,7 @@ export function WorkspaceSettings() {
   const uploadImageMutation = trpc.workspace.uploadImage.useMutation({
     onSuccess: (data) => {
       toast.success(data.message);
-      activeWorkspaceQuery.refetch();
+      trpcUtils.workspace.getActiveWorkspace.invalidate();
     },
     onError: (error) => {
       toast.error(error.message);
@@ -96,7 +101,7 @@ export function WorkspaceSettings() {
   const updateWorkspaceMutation = trpc.workspace.updateWorkspace.useMutation({
     onSuccess: () => {
       toast.success("Workspace updated successfully");
-      activeWorkspaceQuery.refetch();
+      trpcUtils.workspace.getActiveWorkspace.invalidate();
     },
     onError: () => {
       toast.error("Failed to update workspace");
@@ -105,8 +110,8 @@ export function WorkspaceSettings() {
 
   const form = useForm({
     defaultValues: {
-      name: activeWorkspaceQuery.data?.name ?? "",
-      description: activeWorkspaceQuery.data?.description ?? "",
+      name: activeWorkspace?.name ?? "",
+      description: activeWorkspace?.description ?? "",
     },
     validators: {
       onChange: z.object({
@@ -116,8 +121,8 @@ export function WorkspaceSettings() {
     },
     onSubmit: async ({ value }) => {
       if (
-        value.name.trim() == activeWorkspaceQuery.data?.name &&
-        value.description.trim() == activeWorkspaceQuery.data?.description
+        value.name.trim() == activeWorkspace?.name &&
+        value.description.trim() == activeWorkspace?.description
       ) {
         return;
       }
@@ -127,10 +132,6 @@ export function WorkspaceSettings() {
       });
     },
   });
-
-  if (activeWorkspaceQuery.isPending || currentUserRoleQuery.isPending) {
-    return <LoadingContent />;
-  }
 
   return (
     <div className="space-y-8">
@@ -173,15 +174,11 @@ export function WorkspaceSettings() {
                 >
                   <Avatar className="h-12 w-12">
                     <AvatarImage
-                      src={
-                        previewImage || activeWorkspaceQuery.data?.image || ""
-                      }
-                      alt={activeWorkspaceQuery.data?.name || "User"}
+                      src={previewImage || activeWorkspace?.image || ""}
+                      alt={activeWorkspace?.name || "User"}
                     />
                     <AvatarFallback className="text-xl">
-                      {activeWorkspaceQuery.data?.name
-                        ?.slice(0, 2)
-                        .toUpperCase()}
+                      {activeWorkspace?.name?.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
 
@@ -255,7 +252,7 @@ export function WorkspaceSettings() {
           </SectionDescription>
         </SectionHeader>
         <SectionContent>
-          {activeWorkspaceQuery.data?.workspaceType === "PERSONAL" && (
+          {activeWorkspace?.workspaceType === "PERSONAL" && (
             <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground mb-4">
               <p className="font-medium text-sm">Personal Workspace</p>
               <p className="mt-1 text-xs">
@@ -264,23 +261,6 @@ export function WorkspaceSettings() {
               </p>
             </div>
           )}
-          {/* <SectionItem>
-            <SectionItemHeader>
-              <SectionItemTitle>Leave Workspace</SectionItemTitle>
-              <SectionItemDescription>
-                You will lose access to this workspace and all its projects. An
-                admin will need to re-invite you to regain access.
-              </SectionItemDescription>
-            </SectionItemHeader>
-            <SectionItemContent>
-              <LeaveWorkspaceDialog
-                disabled={
-                  activeWorkspaceQuery.data?.workspaceType === "PERSONAL"
-                }
-              />
-            </SectionItemContent>
-          </SectionItem>
-          <Separator /> */}
           <SectionItem>
             <SectionItemHeader>
               <SectionItemTitle>Delete Workspace</SectionItemTitle>
@@ -292,10 +272,10 @@ export function WorkspaceSettings() {
             </SectionItemHeader>
             <SectionItemContent>
               <DeleteWorkspaceDialog
-                workspaceName={activeWorkspaceQuery.data?.name ?? ""}
+                workspaceName={activeWorkspace?.name ?? ""}
                 disabled={
-                  activeWorkspaceQuery.data?.workspaceType === "PERSONAL" ||
-                  currentUserRoleQuery.data?.role !== "OWNER"
+                  activeWorkspace?.workspaceType === "PERSONAL" ||
+                  currentUserRole?.role !== "OWNER"
                 }
               />
             </SectionItemContent>
