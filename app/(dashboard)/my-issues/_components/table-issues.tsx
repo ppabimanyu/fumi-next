@@ -38,6 +38,7 @@ import moment from "moment";
 import { statusIcon } from "@/components/status-icon";
 import { IssueTableRow } from "./issue-table-row";
 import { Button } from "@/components/ui/button";
+import { priorityEnum } from "@/lib/constants/priority";
 
 // Filter options
 const statusFilterOptions = [
@@ -252,7 +253,7 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="max-w-xs overflow-hidden text-ellipsis">
-        {priority(row.original.priority)?.icon}
+        {priority(row.original.priority as priorityEnum)?.icon}
       </div>
     ),
   },
@@ -482,7 +483,7 @@ export function TableIssues() {
                     );
                   }}
                 >
-                  {priority(option.value)?.icon || option.label}
+                  {priority(option.value as priorityEnum)?.icon || option.label}
                 </DropdownMenuCheckboxItem>
               ))}
               {priorityFilter.length > 0 && (
