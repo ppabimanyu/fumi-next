@@ -7,22 +7,34 @@ import SeparatorFull from "@/components/separator-full";
 import { ProjectOverview } from "./_components/overview";
 import { ProjectListView } from "./_components/list-view";
 import { ProjectKanbanView } from "./_components/kanban-view";
-import { ProjectSettings } from "./_components/settings";
-
-// Mock project data - in real implementation this would come from params/API
-const project = {
-  id: "p5gr84i9",
-  name: "Project Alpha",
-  code: "PROJ",
-};
+import { ProjectSettingsPage } from "./_components/settings";
+import { useParams } from "next/navigation";
+import { trpc } from "@/lib/trpc/client";
+import LoadingContent from "@/components/loading-content";
+import { Suspense } from "react";
 
 export default function ProjectPage() {
+  return (
+    <Suspense fallback={<LoadingContent />}>
+      <Project />
+    </Suspense>
+  );
+}
+
+function Project() {
+  const params = useParams<{ id: string }>();
+  const projectId = params.id;
+
+  const [project] = trpc.project.getProjectById.useSuspenseQuery({
+    projectId,
+  });
+
   return (
     <div className="flex flex-col h-full w-full space-y-2 ">
       <div className="space-y-0">
         <PageTitle className="flex items-center gap-2">
           <Box className="size-5" />
-          {project.name}
+          {project?.name}
         </PageTitle>
         <PageDescription>
           Manage project issues, track progress, and collaborate with your team.
@@ -59,7 +71,12 @@ export default function ProjectPage() {
           <ProjectKanbanView />
         </TabsContent>
         <TabsContent value="settings">
-          <ProjectSettings />
+          <ProjectSettingsPage
+            id={projectId}
+            name={project?.name ?? ""}
+            code={project?.code ?? ""}
+            description={project?.description ?? ""}
+          />
         </TabsContent>
       </Tabs>
     </div>

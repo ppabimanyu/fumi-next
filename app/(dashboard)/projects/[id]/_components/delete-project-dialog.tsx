@@ -15,46 +15,63 @@ import { Input } from "@/components/ui/input";
 import LoadingButton from "@/components/loading-button";
 import { Trash2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc/client";
+import { useRouter } from "next/navigation";
+import { env } from "@/env";
 
-const projectName = "Project Alpha";
-
-export function DeleteProjectDialog() {
+export function DeleteProjectDialog({
+  id,
+  name,
+}: {
+  id: string;
+  name: string;
+}) {
+  const router = useRouter();
+  const trpcUtils = trpc.useUtils();
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+
+  const deleteProjectMutation = trpc.project.deleteProject.useMutation({
+    onSuccess: () => {
+      toast.success("Project deleted successfully");
+      trpcUtils.project.listProjects.invalidate();
+      router.replace(env.NEXT_PUBLIC_DEFAULT_AUTHENTICATED_PAGE);
+    },
+    onError: () => {
+      toast.error("Failed to delete project");
+    },
+    onSettled: () => {
+      handleClose();
+    },
+  });
 
   const handleDelete = async () => {
-    if (confirmText !== projectName) {
+    if (confirmText !== name) {
       toast.error("Please type the project name correctly to confirm deletion");
       return;
     }
-
-    setIsLoading(true);
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Project deleted successfully");
-      setOpen(false);
-    } catch {
-      toast.error("Failed to delete project");
-    } finally {
-      setIsLoading(false);
-    }
+    await deleteProjectMutation.mutateAsync({ projectId: id });
   };
 
   const handleClose = () => {
-    if (!isLoading) {
-      setOpen(false);
-      setConfirmText("");
-    }
+    setOpen(false);
+    setConfirmText("");
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          handleClose();
+        } else {
+          setOpen(true);
+        }
+      }}
+    >
       <DialogTrigger asChild>
-        <Button variant="destructive" onClick={() => setOpen(true)}>
-          <Trash2 className="size-4 mr-2" />
+        <Button className="text-destructive bg-destructive/10 hover:bg-destructive/20 disabled:opacity-50 disabled:cursor-not-allowed">
+          <Trash2 className="size-4" />
           Delete Project
         </Button>
       </DialogTrigger>
@@ -71,7 +88,6 @@ export function DeleteProjectDialog() {
             </p>
             <ul className="text-sm space-y-1 list-disc list-inside text-muted-foreground">
               <li>All issues will be deleted</li>
-              <li>All comments will be deleted</li>
               <li>All project settings will be removed</li>
             </ul>
           </DialogDescription>
@@ -80,26 +96,30 @@ export function DeleteProjectDialog() {
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <p className="text-sm">
-              Please type <strong>{projectName}</strong> to confirm:
+              Please type <strong>{name}</strong> to confirm:
             </p>
             <Input
-              placeholder={projectName}
+              placeholder={name}
               value={confirmText}
               onChange={(e) => setConfirmText(e.target.value)}
-              disabled={isLoading}
+              disabled={deleteProjectMutation.isPending}
             />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose} disabled={isLoading}>
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={deleteProjectMutation.isPending}
+          >
             Cancel
           </Button>
           <LoadingButton
             variant="destructive"
             onClick={handleDelete}
-            disabled={confirmText !== projectName}
-            isLoading={isLoading}
+            disabled={confirmText !== name}
+            isLoading={deleteProjectMutation.isPending}
           >
             <Trash2 className="size-4 mr-2" />
             Delete Project
