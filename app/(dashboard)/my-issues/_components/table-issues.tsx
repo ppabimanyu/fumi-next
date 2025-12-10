@@ -33,12 +33,13 @@ import {
 } from "@/components/ui/table";
 import SeparatorFull from "@/components/separator-full";
 import { cn } from "@/lib/utils";
-import { priority } from "@/components/priority";
 import moment from "moment";
 import { statusIcon } from "@/components/status-icon";
 import { IssueTableRow } from "./issue-table-row";
 import { Button } from "@/components/ui/button";
-import { priorityEnum } from "@/lib/constants/priority";
+import { StatusIconEnum } from "@/lib/enum/status-icon";
+import { PriorityEnum } from "@/lib/enum/priority";
+import { priorityItem } from "@/components/priority-item";
 
 // Filter options
 const statusFilterOptions = [
@@ -235,7 +236,7 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="capitalize text-xs font-medium max-w-xs overflow-hidden text-ellipsis flex items-center gap-1">
-        {statusIcon(row.original.status.icon)}
+        {statusIcon(row.original.status.icon as StatusIconEnum)}
         {row.original.status.name}
       </div>
     ),
@@ -253,7 +254,7 @@ export const columns: ColumnDef<Issue>[] = [
     ),
     cell: ({ row }) => (
       <div className="max-w-xs overflow-hidden text-ellipsis">
-        {priority(row.original.priority as priorityEnum)?.icon}
+        {priorityItem(row.original.priority as PriorityEnum)?.icon}
       </div>
     ),
   },
@@ -426,7 +427,7 @@ export function TableIssues() {
                   }}
                 >
                   <span className="flex items-center gap-2">
-                    {statusIcon(option.icon)}
+                    {statusIcon(option.icon as StatusIconEnum)}
                     {option.label}
                   </span>
                 </DropdownMenuCheckboxItem>
@@ -483,7 +484,8 @@ export function TableIssues() {
                     );
                   }}
                 >
-                  {priority(option.value as priorityEnum)?.icon || option.label}
+                  {priorityItem(option.value as PriorityEnum)?.icon ||
+                    option.label}
                 </DropdownMenuCheckboxItem>
               ))}
               {priorityFilter.length > 0 && (

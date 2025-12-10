@@ -6,15 +6,8 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { listPriorities, priority } from "@/components/priority";
+import { priorityItem, listPriorityItems } from "@/components/priority-item";
 import { statusIcon } from "@/components/status-icon";
 import {
   Box,
@@ -28,15 +21,6 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
@@ -54,9 +38,9 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { StatusIconEnum } from "@/lib/enum/status-icon";
+import { PriorityEnum } from "@/lib/enum/priority";
 
 export type Issue = {
   id: string;
@@ -400,7 +384,7 @@ export function IssueDetailDialog({
                     <span className="flex items-center gap-2">
                       {status ? (
                         <>
-                          {statusIcon(status.icon)}
+                          {statusIcon(status.icon as StatusIconEnum)}
                           <span className="text-xs">{status.name}</span>
                         </>
                       ) : (
@@ -440,7 +424,7 @@ export function IssueDetailDialog({
                                   setOpenComboboxStatus(false);
                                 }}
                               >
-                                {statusIcon(status.icon)}
+                                {statusIcon(status.icon as StatusIconEnum)}
                                 {status.name}
                                 <Check
                                   className={cn(
@@ -479,7 +463,7 @@ export function IssueDetailDialog({
                       size={"sm"}
                     >
                       {field.state.value
-                        ? priority(field.state.value)?.icon
+                        ? priorityItem(field.state.value as PriorityEnum)?.icon
                         : ""}
                     </Button>
                   </PopoverTrigger>
@@ -489,7 +473,7 @@ export function IssueDetailDialog({
                       <CommandList>
                         <CommandEmpty>No priority found.</CommandEmpty>
                         <CommandGroup>
-                          {listPriorities.map((p) => (
+                          {listPriorityItems.map((p) => (
                             <CommandItem
                               key={p.value}
                               value={p.value}

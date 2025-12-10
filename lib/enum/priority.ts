@@ -1,4 +1,4 @@
-export enum priorityEnum {
+export enum PriorityEnum {
   NONE = "NONE",
   LOW = "LOW",
   MEDIUM = "MEDIUM",

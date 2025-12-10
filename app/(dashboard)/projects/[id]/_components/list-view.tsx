@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { priority } from "@/components/priority";
+import { priority } from "@/components/priority-item";
 import { statusIcon } from "@/components/status-icon";
 import { ChevronDown, ChevronRight, Timer, TimerOff } from "lucide-react";
 import moment from "moment";
