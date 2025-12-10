@@ -14,16 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LoadingButton from "@/components/loading-button";
 import { UserMinus, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-
-export type TeamMember = {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  role: "owner" | "admin" | "member";
-  status: "active" | "pending" | "inactive";
-  joinedAt: Date;
-};
+import { TeamMember } from "./table-members";
 
 interface RemoveMemberDialogProps {
   member: TeamMember;
@@ -45,7 +36,7 @@ export function RemoveMemberDialog({
       // TODO: Implement actual remove logic via tRPC
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success(`${member.name} has been removed from the team`);
+      toast.success(`${member.user.name} has been removed from the team`);
       onOpenChange(false);
     } catch {
       toast.error("Failed to remove member. Please try again.");
@@ -71,9 +62,9 @@ export function RemoveMemberDialog({
 
         <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
           <Avatar className="size-10">
-            <AvatarImage src={member.avatar} alt={member.name} />
+            <AvatarImage src={member.user.image ?? ""} alt={member.user.name} />
             <AvatarFallback className="text-sm">
-              {member.name
+              {member.user.name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
@@ -81,8 +72,10 @@ export function RemoveMemberDialog({
             </AvatarFallback>
           </Avatar>
           <div>
-            <div className="font-medium">{member.name}</div>
-            <div className="text-sm text-muted-foreground">{member.email}</div>
+            <div className="font-medium">{member.user.name}</div>
+            <div className="text-sm text-muted-foreground">
+              {member.user.email}
+            </div>
           </div>
         </div>
 

@@ -39,109 +39,69 @@ import { MemberActions } from "./member-actions";
 import { Button } from "@/components/ui/button";
 
 // Filter options
-const roleFilterOptions = [
+export type RoleType = "OWNER" | "ADMIN" | "MEMBER";
+export type StatusType = "ACTIVE" | "PENDING";
+
+const roleFilterOptions: {
+  value: RoleType;
+  label: string;
+  icon: React.ReactNode;
+}[] = [
   {
-    value: "owner",
+    value: "OWNER",
     label: "Owner",
     icon: <Crown className="size-3 text-yellow-500" />,
   },
   {
-    value: "admin",
+    value: "ADMIN",
     label: "Admin",
     icon: <Shield className="size-3 text-blue-500" />,
   },
   {
-    value: "member",
+    value: "MEMBER",
     label: "Member",
     icon: <User className="size-3 text-muted-foreground" />,
   },
 ];
 
-const statusFilterOptions = [
-  { value: "active", label: "Active" },
-  { value: "pending", label: "Pending" },
-  { value: "inactive", label: "Inactive" },
-];
-
-const data: TeamMember[] = [
-  {
-    id: "member-1",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: "",
-    role: "owner",
-    status: "active",
-    joinedAt: new Date("2024-01-15"),
-  },
-  {
-    id: "member-2",
-    name: "Sarah Johnson",
-    email: "sarah.johnson@example.com",
-    avatar: "",
-    role: "admin",
-    status: "active",
-    joinedAt: new Date("2024-03-20"),
-  },
-  {
-    id: "member-3",
-    name: "Mike Chen",
-    email: "mike.chen@example.com",
-    avatar: "",
-    role: "member",
-    status: "active",
-    joinedAt: new Date("2024-06-10"),
-  },
-  {
-    id: "member-4",
-    name: "Emily Davis",
-    email: "emily.davis@example.com",
-    avatar: "",
-    role: "member",
-    status: "active",
-    joinedAt: new Date("2024-08-05"),
-  },
-  {
-    id: "member-5",
-    name: "Alex Wilson",
-    email: "alex.wilson@example.com",
-    avatar: "",
-    role: "member",
-    status: "pending",
-    joinedAt: new Date("2024-12-01"),
-  },
+const statusFilterOptions: { value: StatusType; label: string }[] = [
+  { value: "ACTIVE", label: "Active" },
+  { value: "PENDING", label: "Pending" },
 ];
 
 export type TeamMember = {
   id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  role: "owner" | "admin" | "member";
-  status: "active" | "pending" | "inactive";
-  joinedAt: Date;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image: string | null;
+  };
+  role: RoleType;
+  status: StatusType;
+  createdAt: Date;
 };
 
-const roleIcons: Record<TeamMember["role"], React.ReactNode> = {
-  owner: <Crown className="size-3 text-yellow-500" />,
-  admin: <Shield className="size-3 text-blue-500" />,
-  member: <User className="size-3 text-muted-foreground" />,
+const roleIcons: Record<RoleType, React.ReactNode> = {
+  OWNER: <Crown className="size-3 text-yellow-500" />,
+  ADMIN: <Shield className="size-3 text-blue-500" />,
+  MEMBER: <User className="size-3 text-muted-foreground" />,
 };
 
-const roleBadges: Record<TeamMember["role"], string> = {
-  owner: "bg-yellow-500/10 text-yellow-600 border-none",
-  admin: "bg-blue-500/10 text-blue-600 border-none",
-  member: "bg-muted text-muted-foreground border-none",
+const roleBadges: Record<RoleType, string> = {
+  OWNER: "bg-yellow-500/10 text-yellow-600 border-none",
+  ADMIN: "bg-blue-500/10 text-blue-600 border-none",
+  MEMBER: "bg-muted text-muted-foreground border-none",
 };
 
-const statusBadges: Record<TeamMember["status"], string> = {
-  active: "bg-green-500/10 text-green-600 border-none",
-  pending: "bg-orange-500/10 text-orange-600 border-none",
-  inactive: "bg-muted text-muted-foreground border-none",
+const statusBadges: Record<StatusType, string> = {
+  ACTIVE: "bg-green-500/10 text-green-600 border-none",
+  PENDING: "bg-orange-500/10 text-orange-600 border-none",
 };
 
 export const columns: ColumnDef<TeamMember>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "member",
     header: ({ column }) => (
       <div
         className="text-xs font-medium text-muted-foreground uppercase p-0 flex items-center gap-1 cursor-pointer"
@@ -154,9 +114,12 @@ export const columns: ColumnDef<TeamMember>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-3">
         <Avatar className="size-8">
-          <AvatarImage src={row.original.avatar} alt={row.original.name} />
+          <AvatarImage
+            src={row.original.user.image ?? ""}
+            alt={row.original.user.name}
+          />
           <AvatarFallback className="text-xs">
-            {row.original.name
+            {row.original.user.name
               .split(" ")
               .map((n) => n[0])
               .join("")
@@ -164,9 +127,9 @@ export const columns: ColumnDef<TeamMember>[] = [
           </AvatarFallback>
         </Avatar>
         <div className="space-y-0.5">
-          <div className="text-xs font-medium">{row.original.name}</div>
+          <div className="text-xs font-medium">{row.original.user.name}</div>
           <div className="text-xs text-muted-foreground">
-            {row.original.email}
+            {row.original.user.email}
           </div>
         </div>
       </div>
@@ -229,7 +192,7 @@ export const columns: ColumnDef<TeamMember>[] = [
       </div>
     ),
     cell: ({ row }) => {
-      const date = moment(row.original.joinedAt).format("MMM D, YYYY");
+      const date = moment(row.original.createdAt).format("MMM D, YYYY");
       return (
         <div className="text-xs font-medium text-muted-foreground">{date}</div>
       );
@@ -238,10 +201,13 @@ export const columns: ColumnDef<TeamMember>[] = [
   {
     id: "actions",
     cell: ({ row }) => <MemberActions member={row.original} />,
+    enableHiding: false,
   },
 ];
 
 import moment from "moment";
+import { trpc } from "@/lib/trpc/client";
+import LoadingContent from "@/components/loading-content";
 
 export function TableMembers() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -250,43 +216,27 @@ export function TableMembers() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
   // Filter states
-  const [roleFilter, setRoleFilter] = React.useState<string[]>([]);
-  const [statusFilter, setStatusFilter] = React.useState<string[]>([]);
+  const [roleFilter, setRoleFilter] = React.useState<RoleType[]>([]);
+  const [statusFilter, setStatusFilter] = React.useState<StatusType[]>([]);
 
-  // Filter data based on selections
-  const filteredData = React.useMemo(() => {
-    return data.filter((member) => {
-      // Role filter
-      if (roleFilter.length > 0 && !roleFilter.includes(member.role)) {
-        return false;
-      }
-      // Status filter
-      if (statusFilter.length > 0 && !statusFilter.includes(member.status)) {
-        return false;
-      }
-      return true;
-    });
-  }, [roleFilter, statusFilter]);
+  const listMembersQuery = trpc.workspaceMember.listMembers.useQuery({
+    status: statusFilter,
+    role: roleFilter,
+  });
 
   const table = useReactTable({
-    data: filteredData,
+    data: listMembersQuery.data?.data ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
     },
   });
 
@@ -294,18 +244,6 @@ export function TableMembers() {
     <div className="space-y-2">
       <div className="flex gap-2 items-center justify-between">
         <div className="flex gap-2 items-center">
-          <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            All Members
-          </div>
-          <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            Admins
-          </div>
-          <div className="px-2 py-1 border rounded-lg text-xs font-medium cursor-pointer hover:bg-accent">
-            Pending
-          </div>
-        </div>
-        <div className="flex gap-2 items-center">
-          <InviteMemberDialog />
           {/* Role Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -418,6 +356,10 @@ export function TableMembers() {
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+        <div className="flex gap-2 items-center">
+          <InviteMemberDialog />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex gap-1 items-center text-xs font-medium border rounded-lg px-2 py-1 cursor-pointer hover:bg-accent">
@@ -469,7 +411,16 @@ export function TableMembers() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {listMembersQuery.isPending ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <LoadingContent />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

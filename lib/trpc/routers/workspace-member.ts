@@ -4,6 +4,7 @@ import {
   WorkspaceMemberRole,
   WorkspaceMemberStatus,
 } from "@/generated/prisma/enums";
+import { TRPCError } from "@trpc/server";
 
 const sortableFields = [
   "createdAt",
@@ -41,9 +42,9 @@ export const workspaceMemberRouter = createTRPCRouter({
         search: z.string().trim().optional(),
         sortBy: z.enum(sortableFields).optional().default("createdAt"),
         sortOrder: z.enum(["asc", "desc"]).optional().default("desc"),
-        status: z.enum(WorkspaceMemberStatus).optional(),
-        role: z.enum(WorkspaceMemberRole).optional(),
-        page: z.number().int().positive().optional().default(10),
+        status: z.array(z.enum(WorkspaceMemberStatus)).optional(),
+        role: z.array(z.enum(WorkspaceMemberRole)).optional(),
+        page: z.number().int().positive().optional().default(1),
         limit: z.number().int().min(1).max(100).optional().default(10),
       })
     )
@@ -54,10 +55,10 @@ export const workspaceMemberRouter = createTRPCRouter({
       // Build type-safe where clause
       const where = {
         workspaceId,
-        // Apply status filter if provided
-        ...(status && { status }),
-        // Apply role filter if provided
-        ...(role && { role }),
+        // Apply status filter if provided (multi-select)
+        ...(status && status.length > 0 && { status: { in: status } }),
+        // Apply role filter if provided (multi-select)
+        ...(role && role.length > 0 && { role: { in: role } }),
         // Apply search filter on user name or email if provided
         ...(search && {
           OR: [
@@ -122,7 +123,82 @@ export const workspaceMemberRouter = createTRPCRouter({
         },
       };
     }),
+
   inviteMember: protectedProcedure.mutation(() => {}),
-  removeMember: protectedProcedure.mutation(() => {}),
-  changeMemberRole: protectedProcedure.mutation(() => {}),
+
+  removeMember: protectedProcedure
+    .input(
+      z.object({
+        memberId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { memberId } = input;
+      const userId = ctx.session!.session.userId;
+      const workspaceId = ctx.session!.session.activeWorkspaceId;
+
+      const currentUserRole = await ctx.db.workspaceMember.findFirst({
+        where: {
+          workspaceId,
+          userId,
+        },
+      });
+
+      if (
+        !currentUserRole ||
+        (currentUserRole.role != WorkspaceMemberRole.OWNER &&
+          currentUserRole.role != WorkspaceMemberRole.ADMIN)
+      ) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to remove this member",
+        });
+      }
+
+      await ctx.db.workspaceMember.delete({
+        where: {
+          id: memberId,
+        },
+      });
+    }),
+
+  changeMemberRole: protectedProcedure
+    .input(
+      z.object({
+        memberId: z.string(),
+        role: z.enum(WorkspaceMemberRole),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { memberId, role } = input;
+      const userId = ctx.session!.session.userId;
+      const workspaceId = ctx.session!.session.activeWorkspaceId;
+
+      const currentUserRole = await ctx.db.workspaceMember.findFirst({
+        where: {
+          workspaceId,
+          userId,
+        },
+      });
+
+      if (
+        !currentUserRole ||
+        (currentUserRole.role != WorkspaceMemberRole.OWNER &&
+          currentUserRole.role != WorkspaceMemberRole.ADMIN)
+      ) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You are not allowed to change the role of this member",
+        });
+      }
+
+      await ctx.db.workspaceMember.update({
+        where: {
+          id: memberId,
+        },
+        data: {
+          role,
+        },
+      });
+    }),
 });

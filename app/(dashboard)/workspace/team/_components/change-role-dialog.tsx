@@ -21,29 +21,23 @@ import LoadingButton from "@/components/loading-button";
 import { Shield, ChevronDown, Crown, User, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-
-export type TeamMember = {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  role: "owner" | "admin" | "member";
-  status: "active" | "pending" | "inactive";
-  joinedAt: Date;
-};
-
-type Role = "admin" | "member";
+import { RoleType, TeamMember } from "./table-members";
 
 const roleConfig: Record<
-  Role,
+  RoleType,
   { icon: React.ReactNode; label: string; description: string }
 > = {
-  admin: {
+  OWNER: {
+    icon: <Crown className="size-4 text-yellow-500" />,
+    label: "Owner",
+    description: "Has full control over the workspace",
+  },
+  ADMIN: {
     icon: <Shield className="size-4 text-blue-500" />,
     label: "Admin",
     description: "Can manage team settings and invite members",
   },
-  member: {
+  MEMBER: {
     icon: <User className="size-4 text-muted-foreground" />,
     label: "Member",
     description: "Can view and collaborate on projects",
@@ -62,20 +56,20 @@ export function ChangeRoleDialog({
   onOpenChange,
 }: ChangeRoleDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<Role>(
-    member.role === "owner" ? "admin" : (member.role as Role)
+  const [selectedRole, setSelectedRole] = useState<RoleType>(
+    member.role === "OWNER" ? "ADMIN" : (member.role as RoleType)
   );
 
   const currentRoleDisplay =
-    member.role === "owner" ? (
+    member.role === "OWNER" ? (
       <div className="flex items-center gap-1.5">
         <Crown className="size-4 text-yellow-500" />
         <span>Owner</span>
       </div>
     ) : (
       <div className="flex items-center gap-1.5">
-        {roleConfig[member.role as Role].icon}
-        <span>{roleConfig[member.role as Role].label}</span>
+        {roleConfig[member.role as RoleType].icon}
+        <span>{roleConfig[member.role as RoleType].label}</span>
       </div>
     );
 
@@ -92,7 +86,7 @@ export function ChangeRoleDialog({
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       toast.success(
-        `${member.name}'s role has been changed to ${roleConfig[selectedRole].label}`
+        `${member.user.name}'s role has been changed to ${roleConfig[selectedRole].label}`
       );
       onOpenChange(false);
     } catch {
@@ -102,7 +96,7 @@ export function ChangeRoleDialog({
     }
   };
 
-  const isOwner = member.role === "owner";
+  const isOwner = member.role === "OWNER";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -121,9 +115,9 @@ export function ChangeRoleDialog({
 
         <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
           <Avatar className="size-10">
-            <AvatarImage src={member.avatar} alt={member.name} />
+            <AvatarImage src={member.user.image ?? ""} alt={member.user.name} />
             <AvatarFallback className="text-sm">
-              {member.name
+              {member.user.name
                 .split(" ")
                 .map((n) => n[0])
                 .join("")
@@ -131,8 +125,10 @@ export function ChangeRoleDialog({
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <div className="font-medium">{member.name}</div>
-            <div className="text-sm text-muted-foreground">{member.email}</div>
+            <div className="font-medium">{member.user.name}</div>
+            <div className="text-sm text-muted-foreground">
+              {member.user.email}
+            </div>
           </div>
           <div className="text-sm text-muted-foreground">
             Current: {currentRoleDisplay}
@@ -165,7 +161,7 @@ export function ChangeRoleDialog({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
-                {(Object.keys(roleConfig) as Role[]).map((roleKey) => (
+                {(Object.keys(roleConfig) as RoleType[]).map((roleKey) => (
                   <DropdownMenuItem
                     key={roleKey}
                     onClick={() => setSelectedRole(roleKey)}

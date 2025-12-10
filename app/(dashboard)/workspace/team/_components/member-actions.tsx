@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Shield, UserMinus } from "lucide-react";
-import { RemoveMemberDialog, type TeamMember } from "./remove-member-dialog";
+import { RemoveMemberDialog } from "./remove-member-dialog";
 import { ChangeRoleDialog } from "./change-role-dialog";
+import { TeamMember } from "./table-members";
 
 interface MemberActionsProps {
   member: TeamMember;
@@ -22,7 +23,7 @@ export function MemberActions({ member }: MemberActionsProps) {
   const [removeDialogOpen, setRemoveDialogOpen] = React.useState(false);
   const [changeRoleDialogOpen, setChangeRoleDialogOpen] = React.useState(false);
 
-  const isOwner = member.role === "owner";
+  const isOwner = member.role === "OWNER";
 
   return (
     <>
