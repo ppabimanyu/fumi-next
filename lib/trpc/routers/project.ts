@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "../init";
-import { createProjectSchema } from "@/lib/schemas/project";
+import { z } from "zod";
 
 export const projectRouter = createTRPCRouter({
   listProjects: protectedProcedure.query(async ({ ctx }) => {
@@ -21,7 +21,19 @@ export const projectRouter = createTRPCRouter({
   }),
 
   createProject: protectedProcedure
-    .input(createProjectSchema)
+    .input(
+      z.object({
+        name: z
+          .string()
+          .min(1, "Project name is required")
+          .min(2, "Project name must be at least 2 characters")
+          .max(50, "Project name must be at most 50 characters"),
+        code: z.string().max(10, "Code must be at most 10 characters"),
+        description: z
+          .string()
+          .max(500, "Description must be at most 500 characters"),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const workspaceId = ctx.session!.session.activeWorkspaceId;
       const { name, code, description } = input;

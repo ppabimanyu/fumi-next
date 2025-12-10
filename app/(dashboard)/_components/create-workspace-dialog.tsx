@@ -70,16 +70,7 @@ export function CreateWorkspaceDialog({
       toast.success("Workspace created successfully");
     },
     onError: (error) => {
-      // Handle Zod validation errors from server
-      if (error.data?.zodError?.fieldErrors) {
-        const fieldErrors = error.data.zodError.fieldErrors;
-        const firstError = Object.values(fieldErrors).flat()[0];
-        toast.error(
-          typeof firstError === "string" ? firstError : "Validation failed"
-        );
-      } else {
-        toast.error("Failed to create workspace. Please try again.");
-      }
+      toast.error(`Failed to create workspace. ${error.message}`);
     },
   });
 

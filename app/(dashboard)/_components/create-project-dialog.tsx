@@ -25,7 +25,19 @@ import { toast } from "sonner";
 import { useForm } from "@tanstack/react-form";
 import { trpc } from "@/lib/trpc/client";
 import { useRouter } from "next/navigation";
-import { createProjectSchema } from "@/lib/schemas/project";
+import { z } from "zod";
+
+const createProjectSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Project name is required")
+    .min(2, "Project name must be at least 2 characters")
+    .max(50, "Project name must be at most 50 characters"),
+  code: z.string().max(10, "Code must be at most 10 characters"),
+  description: z
+    .string()
+    .max(500, "Description must be at most 500 characters"),
+});
 
 export function CreateProjectDialog() {
   const [open, setOpen] = useState(false);
@@ -39,16 +51,7 @@ export function CreateProjectDialog() {
       router.push(`/projects/${projectId}`);
     },
     onError: (error) => {
-      // Handle Zod validation errors from server
-      if (error.data?.zodError?.fieldErrors) {
-        const fieldErrors = error.data.zodError.fieldErrors;
-        const firstError = Object.values(fieldErrors).flat()[0];
-        toast.error(
-          typeof firstError === "string" ? firstError : "Validation failed"
-        );
-      } else {
-        toast.error("Failed to create project. Please try again.");
-      }
+      toast.error(`Failed to create project. ${error.message}`);
     },
     onSettled: () => {
       setOpen(false);
