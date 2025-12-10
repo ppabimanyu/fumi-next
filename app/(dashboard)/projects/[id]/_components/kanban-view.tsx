@@ -2,10 +2,12 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { priority } from "@/components/priority-item";
 import { statusIcon } from "@/components/status-icon";
 import { Timer, TimerOff } from "lucide-react";
 import moment from "moment";
+import { priorityItem } from "@/components/priority-item";
+import { PriorityEnum } from "@/lib/enum/priority";
+import { StatusIconEnum } from "@/lib/enum/status-icon";
 
 type Issue = {
   id: string;
@@ -145,7 +147,7 @@ function IssueCard({ issue }: { issue: Issue }) {
         <span className="text-xs text-muted-foreground font-mono">
           {issue.code}
         </span>
-        <span>{priority(issue.priority)?.icon}</span>
+        <span>{priorityItem(issue.priority as PriorityEnum)?.icon}</span>
       </div>
       <p className="text-sm font-medium line-clamp-2">{issue.title}</p>
       <div
@@ -182,7 +184,7 @@ export function ProjectKanbanView() {
           >
             {/* Column Header */}
             <div className="flex items-center gap-2 mb-3 px-1">
-              {statusIcon(status.icon)}
+              {statusIcon(status.icon as StatusIconEnum)}
               <span className="text-sm font-medium">{status.name}</span>
               <span className="text-xs text-muted-foreground ml-auto">
                 {columnIssues.length}

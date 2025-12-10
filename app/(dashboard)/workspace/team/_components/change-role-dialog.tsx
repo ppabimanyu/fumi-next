@@ -21,10 +21,11 @@ import LoadingButton from "@/components/loading-button";
 import { Shield, ChevronDown, Crown, User, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { RoleType, TeamMember } from "./table-members";
+import { TeamMember } from "./table-members";
+import { WorkspaceMemberRoleEnum } from "@/lib/enum/workspace-member-role";
 
 const roleConfig: Record<
-  RoleType,
+  WorkspaceMemberRoleEnum,
   { icon: React.ReactNode; label: string; description: string }
 > = {
   OWNER: {
@@ -56,8 +57,8 @@ export function ChangeRoleDialog({
   onOpenChange,
 }: ChangeRoleDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<RoleType>(
-    member.role === "OWNER" ? "ADMIN" : (member.role as RoleType)
+  const [selectedRole, setSelectedRole] = useState<WorkspaceMemberRoleEnum>(
+    member.role === "OWNER" ? "ADMIN" : (member.role as WorkspaceMemberRoleEnum)
   );
 
   const currentRoleDisplay =
@@ -68,8 +69,8 @@ export function ChangeRoleDialog({
       </div>
     ) : (
       <div className="flex items-center gap-1.5">
-        {roleConfig[member.role as RoleType].icon}
-        <span>{roleConfig[member.role as RoleType].label}</span>
+        {roleConfig[member.role].icon}
+        <span>{roleConfig[member.role].label}</span>
       </div>
     );
 
@@ -161,26 +162,28 @@ export function ChangeRoleDialog({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width)">
-                {(Object.keys(roleConfig) as RoleType[]).map((roleKey) => (
-                  <DropdownMenuItem
-                    key={roleKey}
-                    onClick={() => setSelectedRole(roleKey)}
-                    className={cn(
-                      "flex flex-col items-start gap-1 py-2 cursor-pointer",
-                      selectedRole === roleKey && "bg-accent"
-                    )}
-                  >
-                    <div className="flex items-center gap-2">
-                      {roleConfig[roleKey].icon}
-                      <span className="font-medium">
-                        {roleConfig[roleKey].label}
+                {(Object.keys(roleConfig) as WorkspaceMemberRoleEnum[]).map(
+                  (roleKey) => (
+                    <DropdownMenuItem
+                      key={roleKey}
+                      onClick={() => setSelectedRole(roleKey)}
+                      className={cn(
+                        "flex flex-col items-start gap-1 py-2 cursor-pointer",
+                        selectedRole === roleKey && "bg-accent"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        {roleConfig[roleKey].icon}
+                        <span className="font-medium">
+                          {roleConfig[roleKey].label}
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground pl-6">
+                        {roleConfig[roleKey].description}
                       </span>
-                    </div>
-                    <span className="text-xs text-muted-foreground pl-6">
-                      {roleConfig[roleKey].description}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
+                    </DropdownMenuItem>
+                  )
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

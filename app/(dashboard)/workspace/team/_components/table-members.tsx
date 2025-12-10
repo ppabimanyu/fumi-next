@@ -35,12 +35,8 @@ import { InviteMemberDialog } from "./invite-member-dialog";
 import { MemberActions } from "./member-actions";
 import { Button } from "@/components/ui/button";
 
-// Filter options
-export type RoleType = "OWNER" | "ADMIN" | "MEMBER";
-export type StatusType = "ACTIVE" | "PENDING";
-
 const roleFilterOptions: {
-  value: RoleType;
+  value: WorkspaceMemberRoleEnum;
   label: string;
   icon: React.ReactNode;
 }[] = [
@@ -61,7 +57,10 @@ const roleFilterOptions: {
   },
 ];
 
-const statusFilterOptions: { value: StatusType; label: string }[] = [
+const statusFilterOptions: {
+  value: WorkspaceMemberStatusEnum;
+  label: string;
+}[] = [
   { value: "ACTIVE", label: "Active" },
   { value: "PENDING", label: "Pending" },
 ];
@@ -74,24 +73,24 @@ export type TeamMember = {
     email: string;
     image: string | null;
   };
-  role: RoleType;
-  status: StatusType;
+  role: WorkspaceMemberRoleEnum;
+  status: WorkspaceMemberStatusEnum;
   createdAt: Date;
 };
 
-const roleIcons: Record<RoleType, React.ReactNode> = {
+const roleIcons: Record<WorkspaceMemberRoleEnum, React.ReactNode> = {
   OWNER: <Crown className="size-3 text-yellow-500" />,
   ADMIN: <Shield className="size-3 text-blue-500" />,
   MEMBER: <User className="size-3 text-muted-foreground" />,
 };
 
-const roleBadges: Record<RoleType, string> = {
+const roleBadges: Record<WorkspaceMemberRoleEnum, string> = {
   OWNER: "bg-yellow-500/10 text-yellow-600 border-none",
   ADMIN: "bg-blue-500/10 text-blue-600 border-none",
   MEMBER: "bg-muted text-muted-foreground border-none",
 };
 
-const statusBadges: Record<StatusType, string> = {
+const statusBadges: Record<WorkspaceMemberStatusEnum, string> = {
   ACTIVE: "bg-green-500/10 text-green-600 border-none",
   PENDING: "bg-orange-500/10 text-orange-600 border-none",
 };
@@ -205,6 +204,8 @@ export const columns: ColumnDef<TeamMember>[] = [
 import moment from "moment";
 import { trpc } from "@/lib/trpc/client";
 import LoadingContent from "@/components/loading-content";
+import { WorkspaceMemberRoleEnum } from "@/lib/enum/workspace-member-role";
+import { WorkspaceMemberStatusEnum } from "@/lib/enum/workspace-member-status";
 
 export function TableMembers() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -215,8 +216,12 @@ export function TableMembers() {
     React.useState<VisibilityState>({});
 
   // Filter states
-  const [roleFilter, setRoleFilter] = React.useState<RoleType[]>([]);
-  const [statusFilter, setStatusFilter] = React.useState<StatusType[]>([]);
+  const [roleFilter, setRoleFilter] = React.useState<WorkspaceMemberRoleEnum[]>(
+    []
+  );
+  const [statusFilter, setStatusFilter] = React.useState<
+    WorkspaceMemberStatusEnum[]
+  >([]);
 
   const listMembersQuery = trpc.workspaceMember.listMembers.useQuery({
     status: statusFilter,
